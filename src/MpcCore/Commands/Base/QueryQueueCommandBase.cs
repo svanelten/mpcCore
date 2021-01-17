@@ -1,0 +1,32 @@
+﻿using MpcCore.Contracts;
+using MpcCore.Contracts.Mpd;
+using MpcCore.Response;
+using System.Collections.Generic;
+
+namespace MpcCore.Commands.Base
+{
+	/// <summary>
+	/// Queue commands that return a queue object.
+	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#the-queue"/>
+	/// </summary>
+	public abstract class QueryQueueCommandBase : IMpcCoreCommand<IQueue>
+	{
+		public string Command { get; internal set; }
+
+		public virtual IQueue HandleResponse(IEnumerable<string> response)
+		{
+			var parser = new ResponseParser(response);
+
+			if (parser.ResponseHasNoContent)
+			{
+				return null;
+			}
+
+			return new Mpd.Queue
+			{
+				Items = parser.GetListedTracks()
+			};
+
+		}
+	}
+}

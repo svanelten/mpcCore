@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MpcCore.Console": {
+      "commandName": "Project",
+      "commandLineArgs": "play"
+    }
+  }
+}

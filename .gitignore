@@ -1,0 +1,14 @@
+## System and generated files
+.DS_Store
+
+## Directories
+log/
+node_modules/
+*.csproj.user
+.idea/
+global.json
+.vscode/
+.*~
+*~
+**/bin/ 
+**/obj/

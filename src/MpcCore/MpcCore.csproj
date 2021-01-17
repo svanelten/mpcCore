@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Version>0.0.1-alpha</Version>
+    <Authors>svanelten</Authors>
+    <Product>mpcCore</Product>
+    <Description>A NetStandard client library for the MPD</Description>
+    <Copyright>2021</Copyright>
+    <PackageTags>mpd</PackageTags>
+  </PropertyGroup>
+
+</Project>
