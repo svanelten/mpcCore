@@ -4,9 +4,9 @@ namespace MpcCore.Commands.Player
 {
 	public class SeekInSongId : SimpleCommandBase
 	{
-		public SeekInSongId(string songId, double seconds)
+		public SeekInSongId(string itemId, double seconds)
 		{
-			Command = $"seekid {songId} {seconds:#.##}";
+			Command = $"seekid {itemId} {seconds:#.##}";
 		}
 	}
 }

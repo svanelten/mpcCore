@@ -33,7 +33,7 @@
 		public const string AlbumArtistSort = "albumartistsort";
 
 		/// <summary>
-		/// The song title.
+		/// The item title.
 		/// </summary>
 		public const string Title = "title";
 
@@ -43,9 +43,9 @@
 		public const string Track = "track";
 
 		/// <summary>
-		/// A name for this song. This is not the song title. 
+		/// A name for this item. This is not the item title. 
 		/// The exact meaning of this tag is not well-defined. 
-		/// It is often used by badly configured internet radio stations with broken tags to squeeze both the artist name and the song title in one tag.
+		/// It is often used by badly configured internet radio stations with broken tags to squeeze both the artist name and the item title in one tag.
 		/// </summary>
 		public const string Name = "name";
 
@@ -55,27 +55,27 @@
 		public const string Genre = "genre";
 
 		/// <summary>
-		/// The song’s release date. This is usually a 4-digit year.
+		/// The item’s release date. This is usually a 4-digit year.
 		/// </summary>
 		public const string Date = "date";
 
 		/// <summary>
-		/// The song’s original release date.
+		/// The item’s original release date.
 		/// </summary>
 		public const string OriginalDate = "originaldate";
 
 		/// <summary>
-		/// The artist who composed the song.
+		/// The artist who composed the item.
 		/// </summary>
 		public const string Composer = "composer";
 
 		/// <summary>
-		/// The conductor who conducted the song.
+		/// The conductor who conducted the item.
 		/// </summary>
 		public const string Conductor = "conductor";
 
 		/// <summary>
-		/// The artist who performed the song.
+		/// The artist who performed the item.
 		/// </summary>
 		public const string Performer = "performer";
 
@@ -90,7 +90,7 @@
 		public const string Grouping = "grouping";
 
 		/// <summary>
-		/// A human-readable comment about this song. The exact meaning of this tag is not well-defined.
+		/// A human-readable comment about this item. The exact meaning of this tag is not well-defined.
 		/// </summary>
 		public const string Comment = "comment";
 

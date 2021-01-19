@@ -5,9 +5,9 @@ namespace MpcCore.Commands.Player
 	public class PlayId : SimpleCommandBase
 	{
 
-		public PlayId(string songId)
+		public PlayId(string itemId)
 		{
-			Command = $"playid {songId}";
+			Command = $"playid {itemId}";
 		}
 	}
 }

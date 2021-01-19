@@ -2,12 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>0.0.1-alpha</Version>
+    <Version>0.0.0.1-alpha</Version>
     <Authors>svanelten</Authors>
     <Product>mpcCore</Product>
     <Description>A NetStandard client library for the MPD</Description>
     <Copyright>2021</Copyright>
     <PackageTags>mpd</PackageTags>
+    <PackageProjectUrl>https://github.com/svanelten/mpcCore</PackageProjectUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <AssemblyName>MpcCore</AssemblyName>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
 </Project>

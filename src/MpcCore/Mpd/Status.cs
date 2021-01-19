@@ -72,38 +72,38 @@ namespace MpcCore.Mpd
 		public string State { get; internal set; } = string.Empty;
 
 		/// <summary>
-		/// Playlist/queue song number of the song currently playing or stopped
+		/// Playlist/queue number of the item currently playing or stopped
 		/// </summary>
 		public int Song { get; internal set; }
 
 		/// <summary>
-		/// Playlist/queue song id of the song currently playing or stopped
+		/// Playlist/queue item id of the item currently playing or stopped
 		/// </summary>
 		public int SongId { get; internal set; }
 
 		/// <summary>
-		/// Playlist/queue song number of the song after the one currently playing or stopped
+		/// Playlist/queue item number of the item after the one currently playing or stopped
 		/// </summary>
 		public int NextSong { get; internal set; }
 
 		/// <summary>
-		/// Playlist/queue song id of the song after the one currently playing or stopped
+		/// Playlist/queue item id of the item after the one currently playing or stopped
 		/// </summary>
 		public int NextSongId { get; internal set; }
 
 		/// <summary>
-		/// Total time elapsed (of current playing/paused song) in seconds (deprecated, use elapsed instead)
+		/// Total time elapsed (of current playing/paused item) in seconds (deprecated, use elapsed instead)
 		/// </summary>
 		[Obsolete("Deprecated, use 'Elapsed' instead", false)]
 		public int Time { get; internal set; }
 
 		/// <summary>
-		/// Total time elapsed within the current song in seconds, but with higher resolution.
+		/// Total time elapsed within the current item in seconds, but with higher resolution.
 		/// </summary>
 		public int Elapsed { get; internal set; }
 
 		/// <summary>
-		/// Duration of the current song in seconds
+		/// Duration of the current item in seconds
 		/// </summary>
 		public int Duration { get; internal set; }
 

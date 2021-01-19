@@ -3,13 +3,13 @@
 namespace MpcCore.Commands.Playlist
 {
 	/// <summary>
-	/// Moves the song at position fromPosition in the playlist NAME.m3u to the position toPosition.
+	/// Moves the item at position fromPosition in the playlist NAME.m3u to the position toPosition.
 	/// <see cref="https://www.musicpd.org/doc/html/protocol.html#stored-playlists"/>
 	/// </summary>
 	public class MovePositionOnPlaylist : SimpleCommandBase
 	{
 		/// <summary>
-		/// Moves the song at position fromPosition in the playlist NAME.m3u to the position toPosition.
+		/// <inheritdoc/>
 		/// </summary>
 		/// <param name="name">playlist name (can omit .m3u ending)</param>
 		/// <param name="fromPosition">current playlist position</param>

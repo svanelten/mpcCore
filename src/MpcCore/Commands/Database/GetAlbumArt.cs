@@ -3,23 +3,22 @@
 namespace MpcCore.Commands.Database
 {
 	/// <summary>
-	/// Locate album art for the given song and return a chunk of an album art image file at offset OFFSET.
+	/// Locate album art for the given item and return a chunk of an album art image file at offset OFFSET.
 	/// MPD currently searches the directory the file resides in for a file called cover.png, cover.jpg, cover.tiff or cover.bmp.
 	/// Returns the file size and actual number of bytes read at the requested offset, followed by the chunk requested as raw bytes.
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#the-music-database"/>
 	/// </summary>
+	// TODO: implement binary response correctly
 	public class GetAlbumArt : SimpleCommandBase
 	{
 		/// <summary>
-		/// Locate album art for the given song and return a chunk of an album art image file at offset OFFSET.
-		/// MPD currently searches the directory the file resides in for a file called cover.png, cover.jpg, cover.tiff or cover.bmp.
-		/// Returns the file size and actual number of bytes read at the requested offset, followed by the chunk requested as raw bytes.
+		/// <inheritdoc/>
 		/// </summary>
-		/// <param name="uri">path</param>
+		/// <param name="path">path</param>
 		/// <param name="offset">offset for binary, default is 0 (start)</param>
-		public GetAlbumArt(string uri, int offset = 0)
+		public GetAlbumArt(string path, int offset = 0)
 		{
-			Command = $"albumart {uri} {offset}";
+			Command = $"albumart \"{path}\" {offset}";
 		}
 	}
 }

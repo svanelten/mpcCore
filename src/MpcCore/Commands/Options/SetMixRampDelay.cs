@@ -1,4 +1,5 @@
 ﻿using MpcCore.Commands.Base;
+using MpcCore.Extensions;
 
 namespace MpcCore.Commands.Options
 {
@@ -15,9 +16,7 @@ namespace MpcCore.Commands.Options
 		/// <param name="seconds">number of seconds, set null to disable</param>
 		public SetMixRampDelay(int? seconds)
 		{
-			Command = seconds.HasValue
-				? $"mixrampdelay {seconds.Value}"
-				: "mixrampdelay nan";
+			Command = $"mixrampdelay {seconds.GetParamString("nan")}";
 		}
 	}
 }

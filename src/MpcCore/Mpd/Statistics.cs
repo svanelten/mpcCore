@@ -16,7 +16,7 @@ namespace MpcCore.Mpd
 		public int Albums { get; internal set; }
 
 		/// <summary>
-		/// Number of songs in the database
+		/// Number of items in the database
 		/// </summary>
 		public int Songs { get; internal set; }
 
@@ -26,7 +26,7 @@ namespace MpcCore.Mpd
 		public int Uptime { get; internal set; }
 
 		/// <summary>
-		/// Sum of all song times in the database in seconds
+		/// Sum of all item times in the database in seconds
 		/// </summary>
 		public int DatabasePlaytime { get; internal set; }
 

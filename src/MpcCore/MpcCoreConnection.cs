@@ -209,7 +209,7 @@ namespace MpcCore
 		{
 			var response = new List<string>();
 
-			// Read response untli reach end token (OK or ACK)
+			// Read response to the end token
 			string responseLine;
 			do
 			{

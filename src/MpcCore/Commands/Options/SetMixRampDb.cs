@@ -3,10 +3,10 @@
 namespace MpcCore.Commands.Options
 {
 	/// <summary>
-	/// Sets the threshold at which songs will be overlapped. 
+	/// Sets the threshold at which items will be overlapped. 
 	/// Like crossfading but doesn’t fade the track volume, just overlaps. 
-	/// The songs need to have MixRamp tags added by an external tool. 
-	/// 0dB is the normalized maximum volume so use negative values, MPD documentation endorses -17dB. 
+	/// The items need to have MixRamp tags added by an external tool. 
+	/// 0dB is the normalized maximum volume so use negative values, MPD documentation recommends -17dB. 
 	/// In the absence of mixramp tags crossfading will be used.
 	/// <seealso cref="http://sourceforge.net/projects/mixramp"/>
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#playback-options"/>

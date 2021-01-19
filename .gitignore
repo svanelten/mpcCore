@@ -12,3 +12,4 @@ global.json
 *~
 **/bin/ 
 **/obj/
+**/.vs

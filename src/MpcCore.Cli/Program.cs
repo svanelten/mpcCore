@@ -1,10 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using McMaster.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using System.Threading.Tasks;
-using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace MpcCore.Cli
 {
@@ -22,10 +19,10 @@ namespace MpcCore.Cli
 		}
 	}
 
-	[Command(Name = "sample-cli",
-		FullName = "Sample CLI",
-		Description = "A sample CLI tool.")]
-	[VersionOptionFromMember(MemberName = "GetVersion")]
+	[Command(Name = "mpccorecli",
+		FullName = "mpccorecli",
+		Description = "A MPD command line client based on MpcCore")]
+	[VersionOptionFromMember("-v|--version", MemberName = "GetVersion")]
 	[Subcommand(typeof(Commands.Player.PlayCommand))]
 	[Subcommand(typeof(Commands.Player.StopCommand))]
 	[Subcommand(typeof(Commands.Player.PauseCommand))]
@@ -33,12 +30,14 @@ namespace MpcCore.Cli
 	[Subcommand(typeof(Commands.Player.NextCommand))]
 	[Subcommand(typeof(Commands.Status.StatusCommand))]
 	[Subcommand(typeof(Commands.Queue.QueueCommand))]
+	[Subcommand(typeof(Commands.Database.ListPathCommand))]
 	[HelpOption]
 	public class MainCommand
 	{
-		public void OnExecute(CommandLineApplication app)
+		public int OnExecute(CommandLineApplication app)
 		{
-			Console.WriteLine($"mpcCore v{GetVersion()}");
+			app.ShowHelp();
+			return 1;
 		}
 
 		private string GetVersion()

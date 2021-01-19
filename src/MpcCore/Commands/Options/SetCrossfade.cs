@@ -3,7 +3,7 @@
 namespace MpcCore.Commands.Options
 {
 	/// <summary>
-	/// Set the crossfading between songs.
+	/// Set the crossfading between queue items.
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#playback-options"/>
 	/// </summary>
 	public class SetCrossfade : SimpleCommandBase

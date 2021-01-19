@@ -4,7 +4,7 @@ namespace MpcCore.Commands.Options
 {
 	/// <summary>
 	/// Sets consume playback option.
-	/// When consume is activated, each song played is removed from queue.
+	/// When consume is activated, each item played is removed from queue.
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#playback-options"/>
 	/// </summary>
 	public class SetConsume : SimpleCommandBase

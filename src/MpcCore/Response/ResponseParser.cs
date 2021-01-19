@@ -4,48 +4,94 @@ using MpcCore.Mpd;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MpcCore.Response
 {
+	/// <summary>
+	/// The Responseparser does all the heavy lifting parsing the MPD response
+	/// into DTOs for the different result types.
+	/// TODO: fix the method TODOs.
+	/// TODO: clean up, maybe split into some logical subcomponents?
+	/// </summary>
 	internal class ResponseParser
 	{
+		/// <summary>
+		/// The response string list straight from the reader
+		/// </summary>
 		private List<string> _rawResponse;
+
+		/// <summary>
+		/// Key-Value list of all "key: value" pairs from the response,
+		/// minus state and error lines. Values are trimmed to get rid of the space.
+		/// </summary>
 		private List<KeyValuePair<string, string>> _valueList;
 
+		/// <summary>
+		/// Checks if the response contains non-status info
+		/// </summary>
 		public bool ResponseHasNoContent => _rawResponse?.Count <= 1;
 
+		/// <summary>
+		/// Checks if the response contains an error
+		/// </summary>
 		public bool ResponseHasMpdError => _rawResponse.IsErrorResponse();
 
+		/// <summary>
+		/// Constructor. 
+		/// Takes the response from the server and calls <see cref="_getKeyValuePairs"/> to create the valueList for further processing
+		/// </summary>
+		/// <param name="response">Response string list from the MPD server</param>
 		public ResponseParser(IEnumerable<string> response)
 		{
 			_rawResponse = response.ToList();
-			_valueList = GetKeyValuePairs(_rawResponse);
+			_valueList = _getKeyValuePairs(_rawResponse);
 		}
 
 		/// <summary>
-		/// Creates a list of key/value pairs from the response.
-		/// Status row is removed.
+		/// Parses the list of changed systems from a MPD idle response
 		/// </summary>
-		public List<KeyValuePair<string, string>> GetKeyValuePairs(IEnumerable<string> response)
-		{
-			var result = new List<KeyValuePair<string, string>>();
-			var separator = new[] { ':' };
-
-			foreach (var line in response.Take(response.Count() - 1).ToList())
-			{
-				var split = line.Split(separator, 2);
-				result.Add(new KeyValuePair<string, string>(split[0], split[1].Trim()));
-			}
-
-			return result;
-		}
-
+		/// <returns>string list of changed systems</returns>
 		public List<string> GetChangedSystems()
 		{
 			return _valueList?.Select(e => e.Value).ToList() ?? new List<string>();
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="path">The requested path from the command</param>
+		/// <returns>AlbumArt DTO</returns>
+		public IAlbumArt GetAlbumArt(string path)
+		{
+			var albumArt = new AlbumArt { MpdItemPath = path };
+
+			foreach (var kv in _valueList)
+			{
+				switch (kv.Key)
+				{
+					case ResponseParserKeys.Size:
+						albumArt.Size = Convert.ToInt32(kv.Value);
+						break;
+					case ResponseParserKeys.MimeType:
+						albumArt.MimeType = kv.Value;
+						break;
+					case ResponseParserKeys.Binary:
+						albumArt.Bytes = Encoding.UTF8.GetBytes(kv.Value);
+						break;
+					default:
+						break;
+				}
+			}
+
+			return albumArt;
+		}
+
+		/// <summary>
+		/// Parses the MPD statistics DTO from a MPD response
+		/// </summary>
+		/// <returns>Statistics DTO</returns>
 		public IStatistics GetStatistics()
 		{
 			var statistics = new Statistics();
@@ -83,6 +129,57 @@ namespace MpcCore.Response
 			return statistics;
 		}
 
+		/// <summary>
+		/// Parses a directory list MPD response into directory and item DTOs
+		/// TODO: make more efficient/cleaner
+		/// TODO: merge with TrackBuilder functionality to read file metadata
+		/// TODO: add playlist recognition
+		/// </summary>
+		/// <param name="path">The requested path from the command</param>
+		/// <returns>IDirectory instance</returns>
+		public IDirectory GetDirectoryListing(string path = "")
+		{
+			var split = splitPath(path);
+
+			var result = new Directory { Name = split.Last(), Path = path };
+
+			Directory currentDirectory = null;
+			Item currentFile = null;
+
+			foreach (var kv in _valueList)
+			{
+				if (kv.Key == ResponseParserKeys.Directory)
+				{
+					if (currentDirectory != null)
+					{
+						result.Directories.Add(currentDirectory);
+					}
+
+					var newDirValues = splitPath(kv.Value);
+					currentDirectory = new Directory { Name = newDirValues.Last(), Path = kv.Value };
+				}
+				else if (kv.Key == ResponseParserKeys.File)
+				{
+					var newFileValues = splitPath(kv.Value);
+					currentFile = new Item { Name = newFileValues.Last(), Path = kv.Value };
+					if (currentDirectory != null)
+					{
+						currentDirectory.Files.Add(currentFile);
+					}
+					else
+					{
+						result.Files.Add(currentFile);
+					}
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Reads the status info from the MPD response and parses it into an Status DTO
+		/// </summary>
+		/// <returns>IStatus current MPD status info</returns>
 		public IStatus GetStatus()
 		{
 			var status = new Status();
@@ -167,6 +264,11 @@ namespace MpcCore.Response
 			return status;
 		}
 
+		/// <summary>
+		/// Reads the volume info from the mpd response.
+		/// Will return if there is no value
+		/// </summary>
+		/// <returns>int volume or null</returns>
 		public int? GetVolume()
 		{
 			var volume = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.Volume);
@@ -180,6 +282,11 @@ namespace MpcCore.Response
 			return result;
 		}
 
+		/// <summary>
+		/// Reads the replaygainvalue from the MPD response
+		/// TODO: should probably refactored with a null response for uniform result pattern
+		/// </summary>
+		/// <returns>replaygain string value or n/a</returns>
 		public string GetReplayGainStatus()
 		{
 			var mode = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.ReplayGainMode);
@@ -187,9 +294,15 @@ namespace MpcCore.Response
 			return mode?.Value ?? "n/a";
 		}
 
+		/// <summary>
+		/// Reads the mpd error info from a MPD response
+		/// </summary>
+		/// <param name="command">sent MPD command</param>
+		/// <param name="statusline">string line from the MPD response</param>
+		/// <returns>IMpdError DTO</returns>
 		public static IMpdError ParseMpdError(string command, string statusline)
 		{
-			var regex = new Regex(@"^ACK \[([\d]*)@([\d]*)\] \{([\w\d -]*)\} ([\w\d -]*)");
+			var regex = new Regex(@"^ACK \[([\d]*)@([\d]*)\] \{([\w\d -]*)\} ([\w\d: -]*)");
 
 			var error = new MpdError
 			{
@@ -216,15 +329,25 @@ namespace MpcCore.Response
 			return error;
 		}
 
+		/// <summary>
+		/// Reads the current audio setting value from the MPD response
+		/// TODO: add regex and type conversion
+		/// </summary>
+		/// <param name="str"></param>
+		/// <returns></returns>
 		public IAudio GetAudio(string str)
 		{
-			// TODO finish audio settings
 			return new Audio
 			{
 
 			};
 		}
 
+		/// <summary>
+		/// Reads the chroma fingerprint from an MPD response. 
+		/// Empty if mpd does not provide the functionality
+		/// </summary>
+		/// <returns></returns>
 		public string GetFingerprint()
 		{
 			var print = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.Fingerprint);
@@ -232,6 +355,11 @@ namespace MpcCore.Response
 			return print?.Value ?? string.Empty;
 		}
 
+		/// <summary>
+		/// Tries to parse a last-modified date from a MPD response.
+		/// Returns null if not possible
+		/// </summary>
+		/// <returns>DateTime or null</returns>
 		public DateTime? GetLastModified()
 		{
 			var kv = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.LastModified);
@@ -239,6 +367,11 @@ namespace MpcCore.Response
 			return GetLastModified(kv?.Value);
 		}
 
+		/// <summary>
+		/// Tries to parse a last-modified date from a string.
+		/// Returns null if not possible
+		/// </summary>
+		/// <returns>DateTime or null</returns>
 		public DateTime? GetLastModified(string str = "")
 		{
 			if (!string.IsNullOrEmpty(str))
@@ -254,6 +387,10 @@ namespace MpcCore.Response
 			return null;
 		}
 
+		/// <summary>
+		/// Reads the information on a MPD jon from a MPD response
+		/// </summary>
+		/// <returns></returns>
 		public IJob GetJobInformation()
 		{
 			var jobInfo = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.UpdatingDb);
@@ -270,6 +407,10 @@ namespace MpcCore.Response
 			};
 		}
 
+		/// <summary>
+		///  Reads playlist info from a MPD response
+		/// </summary>
+		/// <returns>List of playlists</returns>
 		public IEnumerable<IPlaylist> GetListedPlaylists()
 		{
 			var list = new List<IPlaylist>();
@@ -307,6 +448,10 @@ namespace MpcCore.Response
 			return list;
 		}
 
+		/// <summary>
+		/// Reads the items and their metadata from a MPD response
+		/// </summary>
+		/// <returns>List of MPD items with metadata</returns>
 		public IEnumerable<IItem> GetListedTracks()
 		{
 			var list = new List<IItem>();
@@ -343,6 +488,57 @@ namespace MpcCore.Response
 			return list;
 		}
 
+		/// <summary>
+		/// Creates a list of key/value pairs from the response.
+		/// Status row is removed.
+		/// </summary>
+		private List<KeyValuePair<string, string>> _getKeyValuePairs(IEnumerable<string> response)
+		{
+			var result = new List<KeyValuePair<string, string>>();
+			var separator = new[] { ':' };
+
+			foreach (var line in response.Take(response.Count() - 1).ToList())
+			{
+				var split = line.Split(separator, 2);
+				result.Add(new KeyValuePair<string, string>(split[0], split[1].Trim()));
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Splits a path string into its parts and does sets some minimum values if neccessary
+		/// </summary>
+		/// <param name="path">file/directory path</param>
+		/// <returns>List of path levels</returns>
+		private List<string> splitPath(string path = "")
+		{
+			var list = new List<string>();
+			if (string.IsNullOrEmpty(path))
+			{
+				list.Add("/");
+			}
+			else
+			{
+				if (path.Contains("/"))
+				{
+					list.AddRange(path.Split("/"));
+				}
+				else
+				{
+					list.Add($"{path}");
+				}
+			}
+
+			return list;
+		}
+
+		/// <summary>
+		/// Converts a unix timestamp into a DateTime.
+		/// Returns null if string is empty.
+		/// </summary>
+		/// <param name="str">unix timestamp string</param>
+		/// <returns>DateTime or null</returns>
 		private DateTime? _getDateTimeFromTimestamp(string str)
 		{
 			if (string.IsNullOrEmpty(str))
@@ -351,7 +547,7 @@ namespace MpcCore.Response
 			}
 
 			var dt = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-			
+
 			return dt.AddSeconds(Convert.ToInt32(str));
 		}
 	}

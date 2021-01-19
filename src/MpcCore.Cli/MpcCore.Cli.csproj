@@ -4,8 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <StartupObject></StartupObject>
-    <AssemblyName>MpcCore.Cli</AssemblyName>
+    <AssemblyName>mpccorecli</AssemblyName>
     <RootNamespace>MpcCore.Cli</RootNamespace>
+    <RepositoryUrl>https://github.com/svanelten/mpcCore</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageProjectUrl>https://github.com/svanelten/mpcCore</PackageProjectUrl>
+    <Version>0.0.0.1-alpha</Version>
   </PropertyGroup>
 
   <ItemGroup>

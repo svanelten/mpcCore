@@ -9,7 +9,7 @@ namespace MpcCore.Commands.Base
 	{
 		public string Command { get; internal set; }
 
-		public bool HandleResponse(IEnumerable<string> response)
+		public virtual bool HandleResponse(IEnumerable<string> response)
 		{
 			return response.ToList().IsBasicOkResponse();
 		}

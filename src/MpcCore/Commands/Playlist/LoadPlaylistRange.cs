@@ -1,4 +1,5 @@
 ﻿using MpcCore.Commands.Base;
+using MpcCore.Extensions;
 
 namespace MpcCore.Commands.Playlist
 {
@@ -14,9 +15,9 @@ namespace MpcCore.Commands.Playlist
 		/// <param name="name">playlist name (can omit .m3u ending)</param>
 		/// <param name="rangeStart">start position of range</param>
 		/// <param name="rangeEnd">end position of range, will go to end of playlist if emptry</param>
-		public LoadPlaylistRange(string name, int rangeStart, int? rangeEnd = null)
+		public LoadPlaylistRange(string name, int? rangeStart = null, int? rangeEnd = null)
 		{
-			Command = $"load {name} {rangeStart}:{(rangeEnd.HasValue ? rangeEnd.Value.ToString() : string.Empty)}";
+			Command = $"load {name} {rangeStart.GetParamString()}:{rangeEnd.GetParamString()}";
 		}
 	}
 }

@@ -7,7 +7,7 @@ using System.Linq;
 namespace MpcCore.Commands.Status
 {
 	/// <summary>
-	/// Displays the song info of the current song (same song that is identified in status)
+	/// Displays the info of the current queue item (same item that is identified in status)
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#querying-mpd-s-status"/>
 	/// </summary>
 	public class GetCurrentSong : IMpcCoreCommand<IItem>

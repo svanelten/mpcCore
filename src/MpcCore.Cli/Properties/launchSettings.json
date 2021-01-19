@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "MpcCore.Console": {
-      "commandName": "Project",
-      "commandLineArgs": "play"
+    "MpcCore.Cli": {
+      "commandName": "Executable",
+      "executablePath": "C:\\projects\\www\\mpcCore\\src\\MpcCore.Cli\\bin\\Release\\net5.0\\MpcCore.Cli.exe"
     }
   }
 }

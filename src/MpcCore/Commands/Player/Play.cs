@@ -1,4 +1,5 @@
 ﻿using MpcCore.Commands.Base;
+using MpcCore.Extensions;
 
 namespace MpcCore.Commands.Player
 {
@@ -6,9 +7,7 @@ namespace MpcCore.Commands.Player
 	{
 		public Play(int? position = null)
 		{
-			Command = position.HasValue 
-				? $"play {position.Value}"
-				: "play";
+			Command = $"play {position.GetParamString()}";
 		}
 	}
 }

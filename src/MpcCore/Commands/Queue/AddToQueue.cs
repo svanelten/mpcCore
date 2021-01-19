@@ -1,5 +1,4 @@
 ﻿using MpcCore.Commands.Base;
-using System;
 
 namespace MpcCore.Commands.Queue
 {
@@ -8,19 +7,10 @@ namespace MpcCore.Commands.Queue
 		/// <summary>
 		/// <inheritdoc/>
 		/// </summary>
-		/// <param name="uri">Uri of file or directory</param>
-		public AddToQueue(string uri)
+		/// <param name="path">path of file or directory</param>
+		public AddToQueue(string path)
 		{
-			Command = $"add {uri}";
-		}
-
-		/// <summary>
-		/// <inheritdoc/>
-		/// </summary>
-		/// <param name="uri">Uri of file or directory</param>
-		public AddToQueue(Uri uri)
-		{
-			Command = $"add {uri}";
+			Command = $"add \"{path}\"";
 		}
 	}
 }

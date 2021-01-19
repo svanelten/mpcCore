@@ -71,8 +71,8 @@ namespace MpcCore.Cli
 
 		public virtual async Task ShowCurrentTrack()
 		{
-			var song = await _client.SendAsync(new MpcCore.Commands.Status.GetCurrentSong());
-			Console.WriteLine($"Artist: {song.Result.Artist},  Name: {song.Result.Name} Title: {song.Result.Title}");
+			var item = await _client.SendAsync(new MpcCore.Commands.Status.GetCurrentSong());
+			Console.WriteLine($"Artist: {item.Result.Artist},  Name: {item.Result.Name} Title: {item.Result.Title}");
 		}
 
 		public void Dispose()

@@ -1,24 +1,18 @@
-﻿using MpcCore.Contracts;
+﻿using MpcCore.Commands.Base;
 using MpcCore.Contracts.Mpd.Filter;
-using MpcCore.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MpcCore.Commands.Database
 {
 	/// <summary>
-	/// Count the number of songs and their total playtime in the database matching the given filter.
+	/// Count the number of items and their total playtime in the database matching the given filter.
 	/// The group keyword may be used to group the results by a tag.
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#the-music-database"/>
 	/// </summary>
-	public class Count : IMpcCoreCommand<int>
+	public class Count : IntCommandBase
 	{
-		public string Command { get; internal set; }
-
 		/// <summary>
-		/// Pass a <see cref="IFilter"/> instance with a configured query to get a count of matching songs.
-		/// Pass a <see cref="Tag"/> string to to group the results by a tag. A group with an empty value contains counts of matching songs which don’t have this group tag. It exists only if at least one such song is found.
+		/// Pass a <see cref="IFilter"/> instance with a configured query to get a count of matching items.
+		/// Pass a <see cref="Tag"/> string to to group the results by a tag. A group with an empty value contains counts of matching items which don’t have this group tag. It exists only if at least one such items is found.
 		/// </summary>
 		/// <param name="filter">IFilter instance</param>
 		/// <param name="groupByTag">optional string tag</param>
@@ -30,9 +24,9 @@ namespace MpcCore.Commands.Database
 		}
 
 		/// <summary>
-		/// Pass a filter expression to get a count of matching songs.
+		/// Pass a filter expression to get a count of matching items.
 		/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#filter-syntax"/>
-		/// Pass a <see cref="Tag"/> string to to group the results by a tag. A group with an empty value contains counts of matching songs which don’t have this group tag. It exists only if at least one such song is found.
+		/// Pass a <see cref="Tag"/> string to to group the results by a tag. A group with an empty value contains counts of matching items which don’t have this group tag. It exists only if at least one such items is found.
 		/// </summary>
 		/// <param name="filter">filter expression</param>
 		/// <param name="groupByTag">optional string tag</param>
@@ -41,16 +35,6 @@ namespace MpcCore.Commands.Database
 			Command = string.IsNullOrEmpty(groupByTag) 
 				? $"count {filter}" 
 				: $"count {filter} group {groupByTag}";
-		}
-
-		public virtual int HandleResponse(IEnumerable<string> response)
-		{
-			if (response.ToList().IsErrorResponse())
-			{
-				return 0;
-			}
-
-			return Convert.ToInt32(response.First());
 		}
 	}
 }

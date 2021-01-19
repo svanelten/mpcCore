@@ -4,10 +4,29 @@ namespace MpcCore.Mpd
 {
 	public class AlbumArt : IAlbumArt
 	{
-		public string MpdItemUri { get; set; }
-		public long Size { get; set; }
-		public int Offset { get; set; }
+		/// <summary>
+		/// Path of the mpd item
+		/// </summary>
+		public string MpdItemPath { get; internal set; }
 
-		public byte[] Bytes { get; set; }
+		/// <summary>
+		/// Total filesize
+		/// </summary>
+		public long Size { get; internal set; }
+
+		/// <summary>
+		/// Offset where reading started
+		/// </summary>
+		public int Offset { get; internal set; }
+
+		/// <summary>
+		/// Bytearray of the binary response
+		/// </summary>
+		public byte[] Bytes { get; internal set; }
+
+		/// <summary>
+		/// Mimetype of the image. Not always set.
+		/// </summary>
+		public string MimeType { get; internal set; }
 	}
 }

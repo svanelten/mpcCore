@@ -2,9 +2,10 @@
 {
 	public interface IAlbumArt
 	{
-		byte[] Bytes { get; set; }
-		string MpdItemUri { get; set; }
-		int Offset { get; set; }
-		long Size { get; set; }
+		byte[] Bytes { get; }
+		string MpdItemPath { get; }
+		int Offset { get; }
+		long Size { get; }
+		string MimeType { get; }
 	}
 }

@@ -23,26 +23,26 @@ This is a really, _really_ early work in progress.
 	* [x] stop
 * [ ] Queue
 	* [x] add
-	* [ ] addid
+	* [x] addid
 	* [x] clear
-	* [ ] delete
-	* [ ] deleteid
-	* [ ] move
-	* [ ] moveid
-	* [ ] playlist
-	* [ ] playlistfind
-	* [ ] playlistid
+	* [x] delete
+	* [x] deleteid
+	* [x] move
+	* [x] moveid
+	* [ ] playlist (deprecated, not planned)
+	* [x] playlistfind
+	* [x] playlistid
 	* [x] playlistinfo
-	* [ ] playlistsearch
-	* [ ] plchanges
-	* [ ] plchangesposid
-	* [ ] prio
-	* [ ] prioid
-	* [ ] rangeid
-	* [ ] shuffle
-	* [ ] swap
-	* [ ] addtagid
-	* [ ] cleartagid
+	* [x] playlistsearch
+	* [x] plchanges
+	* [x] plchangesposid
+	* [x] prio
+	* [x] prioid
+	* [x] rangeid
+	* [x] shuffle
+	* [x] swap
+	* [x] addtagid
+	* [x] cleartagid
 * [x] Playlist commands
 	* [x] listplaylist
 	* [x] listplaylistinfo
@@ -74,22 +74,22 @@ This is a really, _really_ early work in progress.
 	* [x] replay_gain_mode
 	* [x] replay_gain_status
 	* [x] volume
-* [-] Database commands
-	* [x] albumart (incomplete)
+* [ ] Database commands
+	* [x] albumart (incomplete, binary handling)
 	* [x] count
 	* [x] getfingerprint
-	* [x] find (incomplete)
-	* [x] findadd (incomplete)
-	* [x] list
-	* [x] listall
-	* [x] listallinfo
-	* [x] listfiles
-	* [ ] lsinfo
-	* [ ] readcomments
-	* [ ] readpicture
-	* [ ] search
-	* [ ] searchadd
-	* [ ] searchaddpl
+	* [x] find (incomplete, filter todo)
+	* [x] findadd (incomplete, filter todo)
+	* [ ] list (deprecated, not planned)
+	* [x] listall (incomplete, dir tree is currently flat)
+	* [x] listallinfo (incomplete, dir tree is currently flat, metadata todo)
+	* [x] listfiles (incomplete, metadata todo)
+	* [x] lsinfo (incomplete, metadata todo)
+	* [x] readcomments
+	* [x] readpicture (incomplete, binary handling
+	* [x] search (incomplete, filter todo)
+	* [x] searchadd (incomplete, filter todo)
+	* [x] searchaddpl (incomplete, filter todo)
 	* [x] update
 	* [x] rescan
 * [ ] Sticker commands
@@ -141,6 +141,7 @@ This is a really, _really_ early work in progress.
 
 ### Functionality
 * [ ] More error handling
+* [ ] Escaping string values correctly
 * [ ] Binary response handling
 * [ ] Filter handling / construction
 * [ ] Audio format/settings

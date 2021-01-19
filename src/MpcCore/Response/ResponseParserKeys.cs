@@ -19,6 +19,7 @@
 		public const string UpdatingDb = "updating_db";
 		public const string Playlist = "playlist";
 		public const string File = "file";
+		public const string Directory = "directory";
 
 		// status keys
 		public const string Partition = "partition";
@@ -46,5 +47,8 @@
 		// other
 		public const string Fingerprint = "chromaprint";
 		public const string ReplayGainMode = "replay_gain_mode";
+		public const string Size = "size";
+		public const string Binary = "binary";
+		public const string MimeType = "type";
 	}
 }

@@ -16,7 +16,7 @@ namespace MpcCore.Commands.Status
 	/// If the optional list for subsystems is used, MPD will only send notifications when something changed in one of the specified subsytems.
 	/// 
 	/// Available subsystems:
-	///		database: the song database has been modified after update.
+	///		database: the item database has been modified after update.
 	///		update: a database update has started or finished.If the database was modified during the update, the database event is also emitted.
 	///		stored_playlist: a stored playlist has been modified, renamed, created or deleted
 	///		playlist: the queue (i.e.the current playlist) has been modified

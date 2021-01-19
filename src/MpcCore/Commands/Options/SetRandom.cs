@@ -4,7 +4,7 @@ namespace MpcCore.Commands.Options
 {
 	/// <summary>
 	/// Sets random playback option.
-	/// When random is activated, queue songs are played in random order.
+	/// When random is activated, queue items are played in random order.
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#playback-options"/>
 	/// </summary>
 	public class SetRandom : SimpleCommandBase
