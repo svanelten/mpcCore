@@ -58,11 +58,6 @@ namespace MpcCore.Response
 				case "format":
 					_track.Format = item.Value;
 					break;
-				#pragma warning disable CS0618 // Typ oder Element ist veraltet
-				case "time":
-					_track.Time = Convert.ToInt32(item.Value);
-					break;
-				#pragma warning restore CS0618 // Typ oder Element ist veraltet
 
 				// common tag metadata
 				case Tag.Album:

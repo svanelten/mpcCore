@@ -1,7 +1,6 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Mpd;
 using MpcCore.Response;
-using System.Collections.Generic;
 
 namespace MpcCore.Commands.Base
 {
@@ -14,14 +13,14 @@ namespace MpcCore.Commands.Base
 
 		public string Path { get; internal set; }
 
-		public virtual IDirectory HandleResponse(IEnumerable<string> response)
+		public virtual IDirectory HandleResponse(IMpdResponse response)
 		{
-			var parser = new ResponseParser(response);
-
-			if (parser.ResponseHasMpdError)
+			if (response.IsErrorResponse)
 			{
 				return null;
 			}
+
+			var parser = new ResponseParser(response);
 
 			return parser.GetDirectoryListing(Path);
 		}

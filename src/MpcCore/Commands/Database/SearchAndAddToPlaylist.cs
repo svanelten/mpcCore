@@ -52,7 +52,7 @@ namespace MpcCore.Commands.Database
 			}
 		}
 
-		public IEnumerable<IItem> HandleResponse(IEnumerable<string> response)
+		public IEnumerable<IItem> HandleResponse(IMpdResponse response)
 		{
 			var parser = new ResponseParser(response);
 

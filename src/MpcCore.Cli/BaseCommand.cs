@@ -1,13 +1,14 @@
 ﻿using McMaster.Extensions.CommandLineUtils;
 using MpcCore.Contracts;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MpcCore.Cli
 {
 	public class BaseCommand : IDisposable
 	{
-		[Option("-v|--verbose", CommandOptionType.NoValue, LongName = "verbose", Description = "Sets the output to reeeeeally chatty mode")]
+		[Option("--verbose", CommandOptionType.NoValue, LongName = "verbose", Description = "Sets the output to reeeeeally chatty mode")]
 		public bool Verbose { get; }
 
 		private MpcCoreClient _client;
@@ -73,6 +74,31 @@ namespace MpcCore.Cli
 		{
 			var item = await _client.SendAsync(new MpcCore.Commands.Status.GetCurrentSong());
 			Console.WriteLine($"Artist: {item.Result.Artist},  Name: {item.Result.Name} Title: {item.Result.Title}");
+		}
+
+		public virtual async Task<string> ShowDuration(TimeSpan timespan, string prefix = "")
+		{
+			var sb = new StringBuilder();
+
+			if(!string.IsNullOrEmpty(prefix))
+			{
+				sb.AppendFormat("{0}", prefix);
+			}
+
+			if (timespan.Days > 0)
+			{ 
+				sb.AppendFormat("{0} {1} ", timespan.Days, timespan.Days > 1 ? "days" : "day");
+			}
+
+			if (timespan.Hours > 0)
+			{
+				sb.AppendFormat("{0} {1}  ", timespan.Hours, timespan.Hours > 1 ? "hours" : "hour");
+			}
+			
+			sb.AppendFormat("{0}m ", timespan.Minutes);
+			sb.AppendFormat("{0}s", timespan.Seconds);
+
+			return sb.ToString();
 		}
 
 		public void Dispose()

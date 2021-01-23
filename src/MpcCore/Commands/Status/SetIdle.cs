@@ -50,7 +50,7 @@ namespace MpcCore.Commands.Status
 				: "idle";
 		}
 
-		public IEnumerable<string> HandleResponse(IEnumerable<string> response)
+		public IEnumerable<string> HandleResponse(IMpdResponse response)
 		{
 			var parser = new ResponseParser(response);
 			return parser.GetChangedSystems();

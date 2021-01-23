@@ -15,7 +15,7 @@ namespace MpcCore.Commands.Status
 		/// </summary>
 		public string Command { get; internal set; } = "stats";
 
-		public IStatistics HandleResponse(IEnumerable<string> response)
+		public IStatistics HandleResponse(IMpdResponse response)
 		{
 			var parser = new ResponseParser(response);
 

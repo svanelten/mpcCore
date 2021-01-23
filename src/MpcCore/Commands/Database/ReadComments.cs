@@ -31,14 +31,14 @@ namespace MpcCore.Commands.Database
 		/// </summary>
 		/// <param name="response">MPD response</param>
 		/// <returns>item DTO with metadata</returns>
-		public IItem HandleResponse(IEnumerable<string> response)
+		public IItem HandleResponse(IMpdResponse response)
 		{
-			var parser = new ResponseParser(response);
-
-			if (parser.ResponseHasNoContent)
+			if (!response.HasContent)
 			{
 				return null;
 			}
+
+			var parser = new ResponseParser(response);
 
 			// TODO: better handling for single item result?
 			return parser.GetListedTracks().ToList().FirstOrDefault();

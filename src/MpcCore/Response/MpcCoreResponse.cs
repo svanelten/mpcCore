@@ -8,7 +8,7 @@ namespace MpcCore.Response
 {
 	public class MpcCoreResponse<T> : IMpcCoreResponse<T>
 	{
-		private List<string> _response;
+		private MpdResponse _response;
 
 		public IMpcCoreCommand<T> Command { get; internal set; }
 
@@ -16,7 +16,7 @@ namespace MpcCore.Response
 
 		public T Result { get; internal set; }
 
-		public MpcCoreResponse(IMpcCoreCommand<T> command, List<string> response)
+		public MpcCoreResponse(IMpcCoreCommand<T> command, MpdResponse response)
 		{
 			_response = response;
 			Command = command;
@@ -30,7 +30,7 @@ namespace MpcCore.Response
 
 		public async Task<IMpcCoreResponse<T>> CreateResult()
 		{
-			if (_response.IsNullOrEmpty())
+			if (_response.IsNullOrEmpty)
 			{
 				Status.ErrorMessage = "response is empty";
 				Status.HasError = true;
@@ -38,13 +38,13 @@ namespace MpcCore.Response
 				return this;
 			}
 
-			if (_response.IsErrorResponse())
+			if (_response.IsErrorResponse)
 			{
 				Status = new MpcCoreResponseStatus
 				{
 					HasError = true,
 					ErrorMessage = "mpd returned an error",
-					MpdError = ResponseParser.ParseMpdError(Command.Command, _response.Last())
+					MpdError = ResponseParser.ParseMpdError(Command.Command, _response.RawResponse.Last())
 				};
 			}
 

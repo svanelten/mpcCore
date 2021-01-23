@@ -4,7 +4,6 @@ A .netstandard2 MPD client in C#.
 
 Basically i needed something to talk to MPD for a raspberry pi project.
 Mpc.NET is a great example, but seems to be dead. There is lots of time due to Corona.
-
 Programming is fun, .net Core is fun and its cross-os powers should be used. So here it is.
 
 This is a really, _really_ early work in progress.
@@ -75,7 +74,7 @@ This is a really, _really_ early work in progress.
 	* [x] replay_gain_status
 	* [x] volume
 * [ ] Database commands
-	* [x] albumart (incomplete, binary handling)
+	* [x] albumart
 	* [x] count
 	* [x] getfingerprint
 	* [x] find (incomplete, filter todo)
@@ -86,7 +85,7 @@ This is a really, _really_ early work in progress.
 	* [x] listfiles (incomplete, metadata todo)
 	* [x] lsinfo (incomplete, metadata todo)
 	* [x] readcomments
-	* [x] readpicture (incomplete, binary handling
+	* [x] readpicture
 	* [x] search (incomplete, filter todo)
 	* [x] searchadd (incomplete, filter todo)
 	* [x] searchaddpl (incomplete, filter todo)
@@ -142,7 +141,7 @@ This is a really, _really_ early work in progress.
 ### Functionality
 * [ ] More error handling
 * [ ] Escaping string values correctly
-* [ ] Binary response handling
+* [x] Binary response handling
 * [ ] Filter handling / construction
 * [ ] Audio format/settings
 * [ ] Authentication

@@ -1,7 +1,4 @@
 ﻿using MpcCore.Contracts;
-using MpcCore.Extensions;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace MpcCore.Commands.Base
 {
@@ -9,9 +6,9 @@ namespace MpcCore.Commands.Base
 	{
 		public string Command { get; internal set; }
 
-		public virtual bool HandleResponse(IEnumerable<string> response)
+		public virtual bool HandleResponse(IMpdResponse response)
 		{
-			return response.ToList().IsBasicOkResponse();
+			return response.IsOkResponse;
 		}
 	}
 }

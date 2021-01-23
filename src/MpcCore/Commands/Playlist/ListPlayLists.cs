@@ -1,5 +1,4 @@
-﻿using MpcCore.Commands.Base;
-using MpcCore.Contracts;
+﻿using MpcCore.Contracts;
 using MpcCore.Contracts.Mpd;
 using MpcCore.Response;
 using System.Collections.Generic;
@@ -15,14 +14,14 @@ namespace MpcCore.Commands.Playlist
 	{
 		public string Command { get; internal set; } = "listplaylists";
 
-		public IEnumerable<IPlaylist> HandleResponse(IEnumerable<string> response)
+		public IEnumerable<IPlaylist> HandleResponse(IMpdResponse response)
 		{
-			var parser = new ResponseParser(response);
-
-			if (parser.ResponseHasNoContent)
+			if (response.HasContent)
 			{
 				return null;
 			}
+
+			var parser = new ResponseParser(response);
 
 			return parser.GetListedPlaylists();
 		}

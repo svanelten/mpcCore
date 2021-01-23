@@ -50,5 +50,6 @@
 		public const string Size = "size";
 		public const string Binary = "binary";
 		public const string MimeType = "type";
+		public const string Id = "id";
 	}
 }

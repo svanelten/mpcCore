@@ -21,10 +21,9 @@ namespace MpcCore.Commands.Database
 		/// If you want case sensitive search set "caseSensitive" to true.
 		/// </summary>
 		/// <param name="filter">IFilter instance</param>
-		/// <param name="caseSensitive">optional enable case sensitivity for search</param>
-		public Search(IFilter filter, bool caseSensitive = false)
+		public Search(IFilter filter)
 		{
-			Command = $"{(caseSensitive ? "find" : "search")} {filter.CreateFilterString()}";
+			Command = $"{(filter.CaseSensitive ? "find" : "search")} {filter.CreateFilterString()}";
 		}
 
 		/// <summary>
@@ -54,7 +53,7 @@ namespace MpcCore.Commands.Database
 			}
 		}
 
-		public IEnumerable<IItem> HandleResponse(IEnumerable<string> response)
+		public IEnumerable<IItem> HandleResponse(IMpdResponse response)
 		{
 			var parser = new ResponseParser(response);
 

@@ -12,7 +12,7 @@ namespace MpcCore.Commands.Options
 	{
 		public string Command { get; internal set; } = "replay_gain_status";
 
-		public string HandleResponse(IEnumerable<string> response)
+		public string HandleResponse(IMpdResponse response)
 		{
 			var parser = new ResponseParser(response);
 

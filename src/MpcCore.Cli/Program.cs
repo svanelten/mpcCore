@@ -29,6 +29,7 @@ namespace MpcCore.Cli
 	[Subcommand(typeof(Commands.Player.PrevCommand))]
 	[Subcommand(typeof(Commands.Player.NextCommand))]
 	[Subcommand(typeof(Commands.Status.StatusCommand))]
+	[Subcommand(typeof(Commands.Status.StatisticsCommand))]
 	[Subcommand(typeof(Commands.Queue.QueueCommand))]
 	[Subcommand(typeof(Commands.Database.ListPathCommand))]
 	[HelpOption]

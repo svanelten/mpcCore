@@ -92,20 +92,14 @@ namespace MpcCore.Mpd
 		public int NextSongId { get; internal set; }
 
 		/// <summary>
-		/// Total time elapsed (of current playing/paused item) in seconds (deprecated, use elapsed instead)
+		/// Total time elapsed within the current item in seconds, with higher resolution than "time" used to have.
 		/// </summary>
-		[Obsolete("Deprecated, use 'Elapsed' instead", false)]
-		public int Time { get; internal set; }
-
-		/// <summary>
-		/// Total time elapsed within the current item in seconds, but with higher resolution.
-		/// </summary>
-		public int Elapsed { get; internal set; }
+		public double Elapsed { get; internal set; }
 
 		/// <summary>
 		/// Duration of the current item in seconds
 		/// </summary>
-		public int Duration { get; internal set; }
+		public double Duration { get; internal set; }
 
 		/// <summary>
 		/// Instantaneous bitrate in kbps

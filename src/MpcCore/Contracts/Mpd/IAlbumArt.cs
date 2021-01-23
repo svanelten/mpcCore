@@ -1,11 +1,17 @@
-﻿namespace MpcCore.Contracts.Mpd
+﻿using System.Threading.Tasks;
+
+namespace MpcCore.Contracts.Mpd
 {
 	public interface IAlbumArt
 	{
 		byte[] Bytes { get; }
-		string MpdItemPath { get; }
-		int Offset { get; }
-		long Size { get; }
+		
+		string ItemPath { get; }
+
 		string MimeType { get; }
+
+		bool HasContent { get; }
+
+		Task SaveAsFile(string path);
 	}
 }

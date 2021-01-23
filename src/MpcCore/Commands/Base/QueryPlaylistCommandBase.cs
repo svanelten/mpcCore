@@ -1,7 +1,6 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Contracts.Mpd;
 using MpcCore.Response;
-using System.Collections.Generic;
 
 namespace MpcCore.Commands.Base
 {
@@ -11,14 +10,14 @@ namespace MpcCore.Commands.Base
 
 		public string PlaylistName { get; internal set; }
 
-		public virtual IPlaylist HandleResponse(IEnumerable<string> response)
+		public virtual IPlaylist HandleResponse(IMpdResponse response)
 		{
-			var parser = new ResponseParser(response);
-
-			if (parser.ResponseHasMpdError)
+			if (response.IsErrorResponse)
 			{
 				return null;
 			}
+
+			var parser = new ResponseParser(response);
 
 			return new Mpd.Playlist
 			{

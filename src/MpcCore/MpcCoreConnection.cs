@@ -1,4 +1,6 @@
 ﻿using MpcCore.Contracts;
+using MpcCore.Contracts.Mpd;
+using MpcCore.Mpd;
 using MpcCore.Response;
 using System;
 using System.Collections.Generic;
@@ -6,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MpcCore
@@ -87,8 +90,8 @@ namespace MpcCore
 			await _tcpClient.ConnectAsync(_endPoint.Address, _endPoint.Port);
 
 			_networkStream = _tcpClient.GetStream();
-			_reader = new StreamReader(_networkStream);
-			_writer = new StreamWriter(_networkStream) { NewLine = "\n" };
+			_reader = new StreamReader(_networkStream, Encoding.ASCII);
+			_writer = new StreamWriter(_networkStream, Encoding.ASCII) { NewLine = "\n" };
 
 			var firstLine = _reader.ReadLine();
 
@@ -135,7 +138,9 @@ namespace MpcCore
 			_writer.WriteLine(command.Trim());
 			_writer.Flush();
 
-			return await ReadResponseAsync();
+			var result = await ReadResponseAsync();
+
+			return result.RawResponse;
 		}
 
 		/// <summary>
@@ -157,14 +162,27 @@ namespace MpcCore
 			}
 
 			var connected = await CheckConnectionAsync();
-			var response = new List<string>();
+			MpdResponse response;
+
+			//if (typeof(T) == typeof(IBinaryChunk))
+			//{
+			//	_writer.WriteLine(command.Command);
+			//	_writer.Flush();
+			//	var bresponse = await ReadBinaryResponseAsync();
+
+			//	return await new MpcCoreResponse<T>(command, bresponse).CreateResult();
+			//}
+
 
 			try
 			{
 				_writer.WriteLine(command.Command);
 				_writer.Flush();
 
-				response = await ReadResponseAsync();
+				response = (command.Command.StartsWith("readpicture") || command.Command.StartsWith("albumart"))
+					? await ReadBinaryResponseAsync()
+					: await ReadResponseAsync();
+
 			}
 			catch (Exception exception)
 			{
@@ -205,20 +223,110 @@ namespace MpcCore
 		/// Reads the response from the MPD server and creates a string list from it
 		/// </summary>
 		/// <returns>Task<List<string>></returns>
-		private async Task<List<string>> ReadResponseAsync()
+		private async Task<MpdResponse> ReadResponseAsync()
 		{
-			var response = new List<string>();
+			var response = new MpdResponse();
 
-			// Read response to the end token
 			string responseLine;
 			do
 			{
 				responseLine = await _reader.ReadLineAsync() ?? string.Empty;
-				response.Add(responseLine);
+				response.RawResponse.Add(responseLine);
 			}
 			while (!(responseLine.Equals(Constants.Ok) || responseLine.StartsWith(Constants.Ack)));
 
-			return response.Where(s => !string.IsNullOrEmpty(s)).ToList();
+			return response;
+		}
+
+		private async Task<MpdResponse> ReadBinaryResponseAsync()
+		{
+			var response = new MpdResponse() { BinaryChunk = new BinaryChunk() };
+
+			try
+			{
+				int NewLine = 10;
+				var encoding = new UTF8Encoding(false, false);
+
+				int value;
+				bool endReached = false;
+				var stringBuffer = new MemoryStream();
+				var stream = _reader.BaseStream;
+
+				while (!endReached && (value = _reader.BaseStream.ReadByte()) != -1)
+				{
+					// if it's not the newline, keep buffering the string
+					if (value != NewLine)
+					{
+						stringBuffer.WriteByte((byte)value);
+						continue;
+					}
+
+					// Got a newline. If there's nothing in the stringBuffer, then just move on
+					if (stringBuffer.Position == 0L)
+					{
+						continue;
+					}
+
+					// Buffered some string.
+					var line = encoding.GetString(stringBuffer.ToArray());
+					response.RawResponse.Add(line);
+
+					if (line.StartsWith(Constants.Ack) || line.StartsWith(Constants.Ok))
+					{
+						endReached = true;
+					}
+
+					var split = line.Split(": ");
+					if (split.Length > 1)
+					{
+						switch (split[0])
+						{
+							case "type":
+								response.BinaryChunk.MimeType = split[1];
+								break;
+							case "offset":
+								response.BinaryChunk.Offset = Convert.ToInt32(split[1]);
+								break;
+							case "size":
+								response.BinaryChunk.FullLength = Convert.ToInt64(split[1]);
+								break;
+							case "binary":
+								// data chunk follows immediately. Let's read it
+								var length = Convert.ToInt32(split[1]);
+								response.BinaryChunk.ChunkLength = length;
+								response.BinaryChunk.Binary = new byte[length];
+								var chunkOffset = 0;
+								var bytesToRead = length; // this is how many bytes we need to read
+								while (bytesToRead > 0)
+								{
+									// .Read will not necessary read as many bytes as we requested. This is why we're doing it in the loop.
+									var bytesRead = await _reader.BaseStream.ReadAsync(response.BinaryChunk.Binary, chunkOffset, bytesToRead);
+									bytesToRead -= bytesRead;
+									chunkOffset += bytesRead;
+								}
+								break;
+						}
+					}
+
+					// truncate the stringBuffer stream for the next line
+					stringBuffer.SetLength(0L);
+				}
+
+				if (stringBuffer.Position > 0L)
+				{
+					// there's some string left in the buffer
+					response.RawResponse.Add(encoding.GetString(stringBuffer.ToArray()));
+				}
+
+				stringBuffer.Close();
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e.Message);
+			}
+
+			return response;
 		}
 
 		/// <summary>

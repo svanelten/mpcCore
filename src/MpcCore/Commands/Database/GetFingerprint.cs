@@ -1,6 +1,5 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Response;
-using System.Collections.Generic;
 
 namespace MpcCore.Commands.Database
 {
@@ -23,7 +22,7 @@ namespace MpcCore.Commands.Database
 			Command = $"getfingerprint \"{path}\"";
 		}
 
-		public string HandleResponse(IEnumerable<string> response)
+		public string HandleResponse(IMpdResponse response)
 		{
 			var parser = new ResponseParser(response);
 

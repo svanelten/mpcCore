@@ -1,4 +1,5 @@
-﻿using MpcCore.Contracts.Mpd;
+﻿using MpcCore.Contracts;
+using MpcCore.Contracts.Mpd;
 using MpcCore.Extensions;
 using MpcCore.Mpd;
 using System;
@@ -20,7 +21,7 @@ namespace MpcCore.Response
 		/// <summary>
 		/// The response string list straight from the reader
 		/// </summary>
-		private List<string> _rawResponse;
+		private IMpdResponse _response;
 
 		/// <summary>
 		/// Key-Value list of all "key: value" pairs from the response,
@@ -29,24 +30,14 @@ namespace MpcCore.Response
 		private List<KeyValuePair<string, string>> _valueList;
 
 		/// <summary>
-		/// Checks if the response contains non-status info
-		/// </summary>
-		public bool ResponseHasNoContent => _rawResponse?.Count <= 1;
-
-		/// <summary>
-		/// Checks if the response contains an error
-		/// </summary>
-		public bool ResponseHasMpdError => _rawResponse.IsErrorResponse();
-
-		/// <summary>
 		/// Constructor. 
 		/// Takes the response from the server and calls <see cref="_getKeyValuePairs"/> to create the valueList for further processing
 		/// </summary>
 		/// <param name="response">Response string list from the MPD server</param>
-		public ResponseParser(IEnumerable<string> response)
+		public ResponseParser(IMpdResponse response)
 		{
-			_rawResponse = response.ToList();
-			_valueList = _getKeyValuePairs(_rawResponse);
+			_response = response;
+			_valueList = _getKeyValuePairs(response.RawResponse);
 		}
 
 		/// <summary>
@@ -59,33 +50,13 @@ namespace MpcCore.Response
 		}
 
 		/// <summary>
-		/// 
+		/// Returns an the id for a given song from the response
 		/// </summary>
-		/// <param name="path">The requested path from the command</param>
-		/// <returns>AlbumArt DTO</returns>
-		public IAlbumArt GetAlbumArt(string path)
+		/// <returns></returns>
+		public int GetItemId()
 		{
-			var albumArt = new AlbumArt { MpdItemPath = path };
-
-			foreach (var kv in _valueList)
-			{
-				switch (kv.Key)
-				{
-					case ResponseParserKeys.Size:
-						albumArt.Size = Convert.ToInt32(kv.Value);
-						break;
-					case ResponseParserKeys.MimeType:
-						albumArt.MimeType = kv.Value;
-						break;
-					case ResponseParserKeys.Binary:
-						albumArt.Bytes = Encoding.UTF8.GetBytes(kv.Value);
-						break;
-					default:
-						break;
-				}
-			}
-
-			return albumArt;
+			var val = _valueList?.FirstOrDefault(k => k.Key == ResponseParserKeys.Id);
+			return val != null ? Convert.ToInt32(val.Value.Value) : 0;
 		}
 
 		/// <summary>
@@ -227,16 +198,11 @@ namespace MpcCore.Response
 					case ResponseParserKeys.NextSongId:
 						status.NextSongId = Convert.ToInt32(kv.Value);
 						break;
-					case ResponseParserKeys.Time:
-#pragma warning disable CS0618 // Typ oder Element ist veraltet
-						status.Time = Convert.ToInt32(kv.Value);
-#pragma warning restore CS0618 // Typ oder Element ist veraltet
-						break;
 					case ResponseParserKeys.Elapsed:
-						status.Elapsed = Convert.ToInt32(kv.Value);
+						status.Elapsed = Double.Parse(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
 						break;
 					case ResponseParserKeys.Duration:
-						status.Duration = Convert.ToInt32(kv.Value);
+						status.Duration = Double.Parse(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
 						break;
 					case ResponseParserKeys.Bitrate:
 						status.Bitrate = Convert.ToInt32(kv.Value);
@@ -256,6 +222,10 @@ namespace MpcCore.Response
 					case ResponseParserKeys.Error:
 						status.Error = ResponseParser.ParseMpdError("error in status", kv.Value);
 						break;
+					// deprecated values to ignore
+					case ResponseParserKeys.Time:
+						break;
+					// default
 					default:
 						throw new Exception($"value '{kv.Key}:{kv.Value}' is not handled");
 				}
@@ -499,8 +469,11 @@ namespace MpcCore.Response
 
 			foreach (var line in response.Take(response.Count() - 1).ToList())
 			{
-				var split = line.Split(separator, 2);
-				result.Add(new KeyValuePair<string, string>(split[0], split[1].Trim()));
+				if (line.Contains(Constants.KeyValueMarker))
+				{
+					var split = line.Split(separator, 2);
+					result.Add(new KeyValuePair<string, string>(split[0], split[1].Trim()));
+				}
 			}
 
 			return result;

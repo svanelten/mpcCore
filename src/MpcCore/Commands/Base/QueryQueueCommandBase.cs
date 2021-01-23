@@ -13,14 +13,14 @@ namespace MpcCore.Commands.Base
 	{
 		public string Command { get; internal set; }
 
-		public virtual IQueue HandleResponse(IEnumerable<string> response)
+		public virtual IQueue HandleResponse(IMpdResponse response)
 		{
-			var parser = new ResponseParser(response);
-
-			if (parser.ResponseHasNoContent)
+			if (!response.HasContent)
 			{
 				return null;
 			}
+
+			var parser = new ResponseParser(response);
 
 			return new Mpd.Queue
 			{

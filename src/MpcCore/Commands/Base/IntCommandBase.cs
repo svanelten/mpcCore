@@ -1,7 +1,5 @@
 ﻿using MpcCore.Contracts;
-using MpcCore.Extensions;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MpcCore.Commands.Base
@@ -13,14 +11,14 @@ namespace MpcCore.Commands.Base
 	{
 		public string Command { get; internal set; }
 
-		public virtual int HandleResponse(IEnumerable<string> response)
+		public virtual int HandleResponse(IMpdResponse response)
 		{
-			if (response.ToList().IsErrorResponse())
+			if (response.IsErrorResponse)
 			{
 				return 0;
 			}
 
-			return Convert.ToInt32(response.First());
+			return Convert.ToInt32(response.GetContent().First() ?? string.Empty);
 		}
 	}
 }

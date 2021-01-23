@@ -8,8 +8,8 @@ namespace MpcCore.Contracts.Mpd
 		int Bitrate { get; }
 		bool Consume { get; }
 		int Crossfade { get; }
-		int Duration { get; }
-		int Elapsed { get; }
+		double Duration { get; }
+		double Elapsed { get; }
 		IMpdError Error { get; }
 		bool HasError { get; }
 		bool IsPaused { get; }
@@ -28,7 +28,6 @@ namespace MpcCore.Contracts.Mpd
 		int Song { get; }
 		int SongId { get; }
 		string State { get; }
-		int Time { get; }
 		int UpdateJobId { get; }
 		int Volume { get; }
 	}

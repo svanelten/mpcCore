@@ -15,7 +15,7 @@ namespace MpcCore.Commands.Options
 		/// </summary>
 		public string Command { get; internal set; } = "getvol";
 
-		public int? HandleResponse(IEnumerable<string> response)
+		public int? HandleResponse(IMpdResponse response)
 		{
 			var parser = new ResponseParser(response);
 			return parser.GetVolume();

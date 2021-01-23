@@ -1,7 +1,6 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Contracts.Mpd;
 using MpcCore.Response;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace MpcCore.Commands.Status
@@ -14,14 +13,14 @@ namespace MpcCore.Commands.Status
 	{
 		public string Command { get; internal set; } = "currentsong";
 
-		public IItem HandleResponse(IEnumerable<string> response)
+		public IItem HandleResponse(IMpdResponse response)
 		{
-			var parser = new ResponseParser(response);
-
-			if (parser.ResponseHasNoContent)
+			if (!response.HasContent)
 			{
 				return null;
 			}
+
+			var parser = new ResponseParser(response);
 			
 			return parser.GetListedTracks().FirstOrDefault();
 		}

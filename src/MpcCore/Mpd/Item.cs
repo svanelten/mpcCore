@@ -1,7 +1,6 @@
-﻿using MpcCore.Contracts.Mpd.Metadata;
-using MpcCore.Contracts.Mpd;
+﻿using MpcCore.Contracts.Mpd;
+using MpcCore.Contracts.Mpd.Metadata;
 using MpcCore.Mpd.Metadata;
-using System;
 using System.Collections.Generic;
 
 namespace MpcCore.Mpd
@@ -10,9 +9,6 @@ namespace MpcCore.Mpd
 	{
 		public string Path { get; internal set; }
 		public double Duration { get; internal set; }
-
-		[Obsolete("Deprecated and only present for backwards compatibility. Please use duration instead.", false)]
-		public int Time { get; internal set; }
 		public string Album { get; internal set; }
 		public string Conductor { get; internal set; }
 		public string AlbumSortable { get; internal set; }
@@ -33,7 +29,7 @@ namespace MpcCore.Mpd
 		public string Comment { get; internal set; }
 		public int Disc { get; internal set; }
 
-		// TODO add expanded property with DateTime values
+		// TODO #maybe #nth add expanded property with DateTime values
 		public string Range { get; internal set; }
 		public string Format { get; internal set; }
 		public int Position { get; internal set; }

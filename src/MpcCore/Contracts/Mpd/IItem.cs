@@ -28,7 +28,6 @@ namespace MpcCore.Contracts.Mpd
 		string Performer { get; }
 		int Position { get; }
 		string Range { get; }
-		int Time { get; }
 		string Title { get; }
 		int Track { get; }
 		IDictionary<string, string> UnknownMetadata { get; }
