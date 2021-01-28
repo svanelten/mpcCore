@@ -21,18 +21,6 @@ namespace MpcCore.Mpd.Filter
 			return this;
 		}
 
-		public IFilter GroupResultByTag(string tagName)
-		{
-			_groupBy.Add(tagName);
-			return this;
-		}
-
-		public IFilter GroupResultByTags(IEnumerable<string> tagNames)
-		{
-			_groupBy.AddRange(tagNames);
-			return this;
-		}
-
 		public IFilter SortResultByTag(string tagName)
 		{
 			_sortBy = tagName;
@@ -48,73 +36,73 @@ namespace MpcCore.Mpd.Filter
 
 		public IFilter SearchInFile(string path)
 		{
-			_matchers.Add($"(file == \"{path}\")");
+			_matchers.Add($"(file == \\'{path}\\')");
 			return this;
 		}
 
 		public IFilter SearchInDirectory(string path)
 		{
-			_matchers.Add($"(base \"{path}\")");
+			_matchers.Add($"(base \\'{path}\\')");
 			return this;
 		}
 
 		public IFilter TagExists(string tagName)
 		{
-			_matchers.Add($"({tagName} != \"\")");
+			_matchers.Add($"({tagName} != \\'\\')");
 			return this;
 		}
 
 		public IFilter TagNotExists(string tagName)
 		{
-			_matchers.Add($"({tagName} == \"\")");
+			_matchers.Add($"({tagName} == \\'\\')");
 			return this;
 		}
 
 		public IFilter AnyTagContains(string value)
 		{
-			_matchers.Add($"(any == \"{_escape(value)}\")");
+			_matchers.Add($"(any == \\'{_escape(value)}\\')");
 			return this;
 		}
 
 		public IFilter AnyTagNotContains(string value)
 		{
-			_matchers.Add($"(!(any == \"{_escape(value)}\"))");
+			_matchers.Add($"(!(any == \\'{_escape(value)}\\'))");
 			return this;
 		}
 
 		public IFilter TagContains(string tagName, string value)
 		{
-			_matchers.Add($"({tagName} contains \"{_escape(value)}\")");
+			_matchers.Add($"({tagName} contains \\'{_escape(value)}\\' )");
 			return this;
 		}
 
 		public IFilter TagNotContains(string tagName, string value)
 		{
-			_matchers.Add($"(!({tagName} contains \"{_escape(value)}\"))");
+			_matchers.Add($"(!({tagName} contains \\'{_escape(value)}\\'))");
 			return this;
 		}
 
 		public IFilter TagValueIs(string tagName, string value)
 		{
-			_matchers.Add($"({tagName} == \"{_escape(value)}\")");
+			_matchers.Add($"({tagName} == \\'{_escape(value)}\\')");
 			return this;
 		}
 
 		public IFilter TagValueNotIs(string tagName, string value)
 		{
-			_matchers.Add($"({tagName} != \"{_escape(value)}\")");
+			_matchers.Add($"({tagName} != \\'{_escape(value)}\\')");
 			return this;
 		}
 
 		public IFilter TagMatches(string tagName, Regex regex)
 		{
-			_matchers.Add($"({tagName} =~ \"{regex}\")");
+			_matchers.Add($"({tagName} =~ \\'{regex}\\')");
 			return this;
 		}
 
 		public IFilter TagNotMatches(string tagName, Regex regex)
 		{
-			_matchers.Add($"({tagName} !~ \"{regex}\")");
+			_matchers.Add($"({tagName} !~ \\'{regex}\\')");
 			return this;
 		}
 
@@ -132,57 +120,49 @@ namespace MpcCore.Mpd.Filter
 
 		public IFilter AudioFormatIs(int sampleRate, int bits, int channels)
 		{
-			_matchers.Add($"(AudioFormat == \"{sampleRate}:{bits}:{channels}\")");
+			_matchers.Add($"(AudioFormat == \\'{sampleRate}:{bits}:{channels}\\')");
 			return this;
 		}
 
 		public IFilter AudioFormatMatches(Regex regex)
 		{
-			_matchers.Add($"(AudioFormat =~ \"{regex}\")");
+			_matchers.Add($"(AudioFormat =~ \\'{regex}\\')");
 			return this;
 		}
 
 		public string CreateFilterString()
 		{
 			var sb = new StringBuilder();
+			sb.Append("\"");
 
 			if (_matchers.Any())
 			{
-				sb.Append("(");
+				if (_matchers.Count > 1)
+				{
+					sb.Append("(");
+				}
+				
 				sb.Append(string.Join(" AND ", _matchers));
-				sb.Append(")");
+				
+				if (_matchers.Count > 1)
+				{
+					sb.Append(")");
+				}
 			}
+			
+			sb.Append("\"");
 
 			if (!string.IsNullOrEmpty(_sortBy))
 			{
 				sb.Append($" sort {_sortBy}");
 			}
 
-			if (_groupBy.Any())
-			{
-				_groupBy.ForEach(g => sb.Append($" group {g}"));
-			}
-
 			return sb.ToString();
 		}
 
+		// TODO: Test escaping on non-standard tag values containing ', ", \ etc
 		private string _escape(string str)
 		{
-			if (str.Contains("\\"))
-			{
-				str = str.Replace("\\", "\\\\");
-			}
-
-			if (str.Contains("'"))
-			{
-				str = str.Replace("'", "\\'");
-			}
-
-			if (str.Contains("\""))
-			{
-				str = str.Replace("\"", "\\\"'");
-			}
-
 			return str;
 		}
 	}

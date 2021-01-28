@@ -135,7 +135,7 @@ namespace MpcCore
 
 			await CheckConnectionAsync();
 
-			_writer.WriteLine(command.Trim());
+			_writer.WriteLine(command);
 			_writer.Flush();
 
 			var result = await ReadResponseAsync();
@@ -163,16 +163,6 @@ namespace MpcCore
 
 			var connected = await CheckConnectionAsync();
 			MpdResponse response;
-
-			//if (typeof(T) == typeof(IBinaryChunk))
-			//{
-			//	_writer.WriteLine(command.Command);
-			//	_writer.Flush();
-			//	var bresponse = await ReadBinaryResponseAsync();
-
-			//	return await new MpcCoreResponse<T>(command, bresponse).CreateResult();
-			//}
-
 
 			try
 			{

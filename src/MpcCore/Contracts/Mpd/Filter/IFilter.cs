@@ -13,8 +13,6 @@ namespace MpcCore.Contracts.Mpd.Filter
 		IFilter AudioFormatIs(int sampleRate, int bits, int channels);
 		IFilter AudioFormatMatches(Regex regex);
 		string CreateFilterString();
-		IFilter GroupResultByTag(string tagName);
-		IFilter GroupResultByTags(IEnumerable<string> tagNames);
 		IFilter ModifiedSince(DateTime dateTime);
 		IFilter NotModifiedSince(DateTime dateTime);
 		IFilter SearchInDirectory(string path);

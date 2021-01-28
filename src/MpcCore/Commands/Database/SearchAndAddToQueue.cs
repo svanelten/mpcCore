@@ -28,15 +28,16 @@ namespace MpcCore.Commands.Database
 		}
 
 		/// <summary>
-		/// Pass a filter expression to add a list of matching items to the queue.
+		/// Pass a filter expression to add a list of matching items to the queue.  Be aware that you need to escape the query string!
+		/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#the-music-database"/>
 		/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#filter-syntax"/>
-		/// Pass a <see cref="Tag"/> string to to group the results by a tag. A group with an empty value contains counts of matching items which don’t have this group tag. It exists only if at least one item song is found.
+		/// Pass a <see cref="Mpd.Tag"/> string to to group the results by a tag. A group with an empty value contains counts of matching items which don’t have this group tag. It exists only if at least one item song is found.
 		/// Pass a range to get a subset of the actual result.
 		/// If you want case sensitive search set "caseSensitive" to true.
 		/// </summary>
 		/// <param name="filter">filter expression</param>
 		/// <param name="caseSensitive">sets the case sensitivity for the search</param>
-		/// <param name="sortByTag">optional string tag to sort the result. Append "-" to sort descending</param>
+		/// <param name="sortByTag">optional string tag to sort the result. Prepend "-" to sort descending</param>
 		/// <param name="rangeStart">optional start position of subset range</param>
 		/// <param name="rangeEnd">optional end position of subset range</param>
 		public SearchAndAddToQueue(string filter, bool caseSensitive, string sortByTag = null, int? rangeStart = null, int? rangeEnd = null)
@@ -45,7 +46,7 @@ namespace MpcCore.Commands.Database
 
 			Command = string.IsNullOrEmpty(sortByTag)
 				? $"{cmd} {filter}"
-				: $"{cmd} {filter} group {sortByTag}";
+				: $"{cmd} {filter} sort {sortByTag}";
 
 			if (rangeStart.HasValue || rangeEnd.HasValue)
 			{

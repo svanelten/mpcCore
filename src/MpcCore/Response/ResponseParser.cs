@@ -1,11 +1,9 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Contracts.Mpd;
-using MpcCore.Extensions;
 using MpcCore.Mpd;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace MpcCore.Response

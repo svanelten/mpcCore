@@ -29,9 +29,9 @@ namespace MpcCore.Test
 		}
 
 		public async Task<IMpcCoreResponse<T>> SendAsync<T>(IMpcCoreCommand<T> command)
-		{ 
-			var response = GetConfiguredResponse(command.Command);
-			
+		{
+			var response = new MpdResponse() { RawResponse = GetConfiguredResponse(command.Command) };
+
 			return await new MpcCoreResponse<T>(command, response).CreateResult();
 		}
 
