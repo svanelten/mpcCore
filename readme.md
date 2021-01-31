@@ -3,101 +3,40 @@
 A .netstandard2 MPD client in C#.
 
 Basically i needed something to talk to MPD for a raspberry pi project.
-Mpc.NET is a great example, but seems to be dead. There is lots of time due to Corona.
-Programming is fun, .net Core is fun and its cross-os powers should be used. So here it is.
+Mpc.NET is a great example, but seems to be dead. Since there is lots of time due to Corona,
+programming is fun and .net Core is fun - here it is.
 
-This is a really, _really_ early work in progress.
+Keep in mind this is a really, _really_ early work in progress.
+
+## Basic usage
+Create a connection with ip and port of your mpd server and use to create a client instance.
+Default values are `127.0.0.1` for local connection and the standard MPD port `6600`.
+
+Connect to the server.
+
+```csharp
+var connection = new MpcCoreConnection("192.168.0.20", "6600");
+var client = new MpcCoreClient(connection);
+var connected = await client.ConnectAsync();
+```
+
+Send commands via `SendAsync()`. For example, load a playlist and start playing.
+```csharp
+await client.SendAsync(new Commands.Playlist.LoadPlaylist("awesomeplaylistname"));
+await client.SendAsync(new Commands.Player.Play());
+```
+
+Each command returns a `IMpcCoreResponse<T>` with the raw command sent to MPD, a status object with error information and the result depending on the command.
 
 ## TODO
 ### Commands
-* [x] Player commands
-	* [x] next
-	* [x] pause
-	* [x] play
-	* [x] playid
-	* [x] previous
-	* [x] seek
-	* [x] seekid
-	* [x] seekcur
-	* [x] stop
-* [ ] Queue
-	* [x] add
-	* [x] addid
-	* [x] clear
-	* [x] delete
-	* [x] deleteid
-	* [x] move
-	* [x] moveid
-	* [ ] playlist (deprecated, not planned)
-	* [x] playlistfind
-	* [x] playlistid
-	* [x] playlistinfo
-	* [x] playlistsearch
-	* [x] plchanges
-	* [x] plchangesposid
-	* [x] prio
-	* [x] prioid
-	* [x] rangeid
-	* [x] shuffle
-	* [x] swap
-	* [x] addtagid
-	* [x] cleartagid
-* [x] Playlist commands
-	* [x] listplaylist
-	* [x] listplaylistinfo
-	* [x] listplaylists
-	* [x] load
-	* [x] playlistadd
-	* [x] playlistclear
-	* [x] playlistdelete
-	* [x] playlistmove
-	* [x] rename
-	* [x] rm
-	* [x] save
-* [x] Status commands
-	* [x] clearerror
-	* [x] currentsong
-	* [x] idle
-	* [x] status
-	* [x] stats
-* [x] Option commands
-	* [x] consume
-	* [x] crossfade
-	* [x] mixrampdb
-	* [x] mixrampdelay
-	* [x] random
-	* [x] repeat
-	* [x] setvol
-	* [x] getvol
-	* [x] single
-	* [x] replay_gain_mode
-	* [x] replay_gain_status
-	* [x] volume
-* [ ] Database commands
-	* [x] albumart
-	* [x] count
-	* [x] getfingerprint
-	* [x] find (incomplete, filter todo)
-	* [x] findadd (incomplete, filter todo)
-	* [ ] list (deprecated, not planned)
-	* [x] listall (incomplete, dir tree is currently flat)
-	* [x] listallinfo (incomplete, dir tree is currently flat, metadata todo)
-	* [x] listfiles (incomplete, metadata todo)
-	* [x] lsinfo (incomplete, metadata todo)
-	* [x] readcomments
-	* [x] readpicture
-	* [x] search (incomplete, filter todo)
-	* [x] searchadd (incomplete, filter todo)
-	* [x] searchaddpl (incomplete, filter todo)
-	* [x] update
-	* [x] rescan
-* [ ] Sticker commands
-	* [ ] get
-	* [ ] set
-	* [ ] delete
-	* [ ] list
-	* [ ] find
-	* [ ] find value
+* [x] Player
+* [x] Queue
+* [x] Playlist
+* [x] Status
+* [x] Option
+* [x] Database
+* [x] Sticker
 * [ ] Connection commands
 	* [ ] close
 	* [ ] kill
@@ -138,11 +77,16 @@ This is a really, _really_ early work in progress.
 	* [ ] readmessages
 	* [ ] sendmessage
 
+#### Deprecated commands 
+- Queue/playlist
+- Database/list
+
 ### Functionality
+* [ ] Command list handling
 * [ ] More error handling
-* [ ] Escaping string values correctly
+* [ ] Checking string escaping edgecases
 * [x] Binary response handling
-* [ ] Filter handling / construction
+* [x] Filter handling / construction
 * [ ] Audio format/settings
 * [ ] Authentication
 * [ ] Nuget export

@@ -99,6 +99,43 @@ namespace MpcCore.Response
 		}
 
 		/// <summary>
+		/// Reads a sticker value from the MPD response
+		/// </summary>
+		/// <param name="path">The path to the MPD item this sticker belongs to</param>
+		/// <param name="type">The sticker type</param>
+		/// <returns></returns>
+		public List<ISticker> GetStickerList(string path = "", string type = StickerType.Song)
+		{
+			var result = new List<ISticker>();
+			var filePath = path;
+
+			foreach (var item in _valueList)
+			{
+				if (item.Key == ResponseParserKeys.File)
+				{
+					filePath = item.Value;
+				}
+
+				if (item.Key == ResponseParserKeys.Sticker && !string.IsNullOrEmpty(item.Value))
+				{
+					var split = item.Value.Split('=', 2);
+					
+					var sticker = new Sticker()
+					{
+						Path = filePath,
+						Type = type,
+						Name = split[0],
+						Value = split.Length > 1 ? split[1] : string.Empty
+					};
+
+					result.Add(sticker);
+				}
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Parses a directory list MPD response into directory and item DTOs
 		/// TODO: make more efficient/cleaner
 		/// TODO: merge with TrackBuilder functionality to read file metadata

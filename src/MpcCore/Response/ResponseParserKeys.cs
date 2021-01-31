@@ -51,5 +51,8 @@
 		public const string Binary = "binary";
 		public const string MimeType = "type";
 		public const string Id = "id";
+
+		// sticker
+		public const string Sticker = "sticker";
 	}
 }

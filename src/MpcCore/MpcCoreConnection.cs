@@ -49,7 +49,7 @@ namespace MpcCore
 		}
 
 		/// <summary>
-		/// Creates a new connection to an MPD server with the given info
+		/// Creates a new connection to a MPD server with the given info
 		/// Default is a local MPD server at 127.0.0.1:6600
 		/// </summary>
 		/// <param name="ip">ip address</param>

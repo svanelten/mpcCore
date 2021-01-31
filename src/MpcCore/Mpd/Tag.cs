@@ -1,5 +1,8 @@
 ﻿namespace MpcCore.Mpd
 {
+	/// <summary>
+	/// Contains predefined tag string for usage with MPD
+	/// </summary>
 	public class Tag
 	{
 		/// <summary>
