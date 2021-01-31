@@ -2,6 +2,8 @@
 
 A .netstandard2 [MPD](https://www.musicpd.org/) client in C#.
 
+![.NET](https://github.com/svanelten/mpcCore/workflows/.NET/badge.svg?branch=main)
+
 Basically i needed something to talk to MPD for a raspberry pi project.
 Mpc.NET is a great example, but seems to be dead. Since there is lots of time due to Corona,
 programming is fun and .net Core is fun - here it is.
