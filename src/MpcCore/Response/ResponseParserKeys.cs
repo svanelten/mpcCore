@@ -44,12 +44,20 @@
 		public const string Audio = "audio";
 		public const string Error = "error";
 
+		// output devices
+		public const string OutputDeviceId = "outputid";
+		public const string OutputDeviceName = "outputname";
+		public const string OutputDevicePlugin = "plugin";
+		public const string OutputDeviceEnabled = "outputenabled";
+		public const string OutputDeviceAttribute = "attribute";
+
 		// other
 		public const string Fingerprint = "chromaprint";
 		public const string ReplayGainMode = "replay_gain_mode";
 		public const string Size = "size";
 		public const string Binary = "binary";
 		public const string MimeType = "type";
+		public const string TagType = "tagtype";
 		public const string Id = "id";
 
 		// sticker

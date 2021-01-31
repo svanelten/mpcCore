@@ -1,6 +1,6 @@
 # mpcCore
 
-A .netstandard2 MPD client in C#.
+A .netstandard2 [MPD](https://www.musicpd.org/) client in C#.
 
 Basically i needed something to talk to MPD for a raspberry pi project.
 Mpc.NET is a great example, but seems to be dead. Since there is lots of time due to Corona,
@@ -9,6 +9,7 @@ programming is fun and .net Core is fun - here it is.
 Keep in mind this is a really, _really_ early work in progress.
 
 ## Basic usage
+### Connecting
 Create a connection with ip and port of your mpd server and use to create a client instance.
 Default values are `127.0.0.1` for local connection and the standard MPD port `6600`.
 
@@ -20,16 +21,24 @@ var client = new MpcCoreClient(connection);
 var connected = await client.ConnectAsync();
 ```
 
+### Sending commands
 Send commands via `SendAsync()`. For example, load a playlist and start playing.
 ```csharp
 await client.SendAsync(new Commands.Playlist.LoadPlaylist("awesomeplaylistname"));
 await client.SendAsync(new Commands.Player.Play());
 ```
-
 Each command returns a `IMpcCoreResponse<T>` with the raw command sent to MPD, a status object with error information and the result depending on the command.
+
+### Disconnecting
+When you are done, disconnect.
+```csharp
+await client.DisconnectAsync();
+```
 
 ## TODO
 ### Commands
+The following commands are currently implemented. Grouping follows the [MPD protocol documentation](https://www.musicpd.org/doc/html/protocol.html).
+
 * [x] Player
 * [x] Queue
 * [x] Playlist
@@ -37,33 +46,14 @@ Each command returns a `IMpcCoreResponse<T>` with the raw command sent to MPD, a
 * [x] Option
 * [x] Database
 * [x] Sticker
-* [ ] Connection commands
-	* [ ] close
-	* [ ] kill
-	* [ ] password
-	* [ ] ping
-	* [ ] tagtypes
-	* [ ] tagtypes disable
-	* [ ] tagtypes enable
-	* [ ] clear
-	* [ ] all
+* [x] Partition
+* [x] Audio output devices
+* [x] Connection
 * [ ] Mount commands
 	* [ ] mount
 	* [ ] unmount
 	* [ ] listmounts
 	* [ ] listneighbors
-* [ ] Partition commands
-	* [ ] partition
-	* [ ] listpartitions
-	* [ ] newpartition
-	* [ ] delpartition
-	* [ ] moveoutput
-* [ ] Audio output devices
-	* [ ] disableoutput
-	* [ ] enableoutput
-	* [ ] toggleoutput
-	* [ ] outputs
-	* [ ] outputset
 * [ ] Reflection
 	* [ ] config
 	* [ ] commands
@@ -77,9 +67,11 @@ Each command returns a `IMpcCoreResponse<T>` with the raw command sent to MPD, a
 	* [ ] readmessages
 	* [ ] sendmessage
 
-#### Deprecated commands 
-- Queue/playlist
-- Database/list
+#### Commands that won't be implemented
+- Queue/playlist - _deprecated_
+- Database/list - _deprecated_
+- Connection/kill - _not recommended_
+- Connection/close - _not recommended_
 
 ### Functionality
 * [ ] Command list handling

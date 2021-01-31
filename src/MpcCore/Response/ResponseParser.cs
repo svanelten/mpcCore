@@ -58,6 +58,54 @@ namespace MpcCore.Response
 		}
 
 		/// <summary>
+		/// Gets the output device information from the response;
+		/// </summary>
+		/// <returns>IEnumerable<IOutputDevice></returns>
+		public IEnumerable<IOutputDevice> GetOutputDeviceList()
+		{
+			var result = new List<IOutputDevice>();
+			OutputDevice device = null;
+
+			foreach (var item in _valueList)
+			{
+				if (item.Key == ResponseParserKeys.OutputDeviceId)
+				{
+					if (device != null)
+					{
+						result.Add(device);
+					}
+
+					device = new OutputDevice { Id = Convert.ToInt32(item.Value) };
+				}
+
+				switch (item.Key)
+				{
+					case ResponseParserKeys.OutputDeviceEnabled:
+						device.Enabled = item.Value == "1";
+						break;
+					case ResponseParserKeys.OutputDeviceName:
+						device.Name = item.Value;
+						break;
+					case ResponseParserKeys.OutputDevicePlugin:
+						device.Plugin = item.Value;
+						break;
+					case ResponseParserKeys.OutputDeviceAttribute:
+						device.Attributes.ToList().Add(item.Value);
+						break;
+					default:
+						break;
+				}
+			}
+
+			if (device != null)
+			{
+				result.Add(device);
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Parses the MPD statistics DTO from a MPD response
 		/// </summary>
 		/// <returns>Statistics DTO</returns>
@@ -99,6 +147,15 @@ namespace MpcCore.Response
 		}
 
 		/// <summary>
+		/// Returns all values from the current response that have the given key
+		/// </summary>
+		/// <returns>String list</returns>
+		public IEnumerable<string> GetValueList(string key)
+		{
+			return _valueList.Where(e => e.Key == key).Select(e => e.Value).ToList();
+		}
+
+		/// <summary>
 		/// Reads a sticker value from the MPD response
 		/// </summary>
 		/// <param name="path">The path to the MPD item this sticker belongs to</param>
@@ -119,7 +176,7 @@ namespace MpcCore.Response
 				if (item.Key == ResponseParserKeys.Sticker && !string.IsNullOrEmpty(item.Value))
 				{
 					var split = item.Value.Split('=', 2);
-					
+
 					var sticker = new Sticker()
 					{
 						Path = filePath,
