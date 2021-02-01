@@ -14,7 +14,7 @@ namespace MpcCore.Commands.Options
 		/// <param name="state">repeat state</param>
 		public SetRepeat(bool state)
 		{
-			Command = $"next {(state ? "1" : "0")}";
+			Command = $"repeat {(state ? "1" : "0")}";
 		}
 	}
 }

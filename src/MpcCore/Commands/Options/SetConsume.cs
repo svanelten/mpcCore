@@ -15,7 +15,7 @@ namespace MpcCore.Commands.Options
 		/// <param name="state">consume state</param>
 		public SetConsume(bool state)
 		{
-			Command = $"next {(state ? "1" : "0")}";
+			Command = $"consume {(state ? "1" : "0")}";
 		}
 	}
 }
