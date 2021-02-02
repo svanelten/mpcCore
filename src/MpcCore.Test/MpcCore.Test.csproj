@@ -1,9 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <Version>0.0.0.1</Version>
+
+    <Authors>svanelten</Authors>
+
+    <Company>svanelten</Company>
+
+    <Product>MpcCore.Test contains unit tests for MpcCore</Product>
+
+    <PackageProjectUrl>https://github.com/svanelten/mpcCore</PackageProjectUrl>
+
+    <RepositoryUrl>https://github.com/svanelten/mpcCore</RepositoryUrl>
+
+    <RepositoryType>GIT</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
