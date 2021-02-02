@@ -20,7 +20,7 @@ namespace MpcCore.Commands.Outputs
 		{ 
 			var parser = new ResponseParser(response);
 
-			return parser.GetOutputDeviceList();
+			return parser.GetListedOutputDevices();
 		}
 	}
 }

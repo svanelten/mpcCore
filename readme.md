@@ -8,7 +8,7 @@ Basically i needed something to talk to MPD for a raspberry pi project.
 Mpc.NET is a great example, but seems to be dead. Since there is lots of time due to Corona,
 programming is fun and .net Core is fun - here it is.
 
-Keep in mind this is a really, _really_ early work in progress.
+Keep in mind this is a really early work in progress.
 
 ## Basic usage
 ### Connecting
@@ -51,17 +51,8 @@ The following commands are currently implemented. Grouping follows the [MPD prot
 * [x] Partition
 * [x] Audio output devices
 * [x] Connection
-* [ ] Mount commands
-	* [ ] mount
-	* [ ] unmount
-	* [ ] listmounts
-	* [ ] listneighbors
-* [ ] Reflection
-	* [ ] config
-	* [ ] commands
-	* [ ] notcommands
-	* [ ] urlhandlers
-	* [ ] decoders
+* [x] Mount commands
+* [x] Reflection
 * [ ] Client to client commands
 	* [ ] subscribe
 	* [ ] unsubscribe
@@ -81,14 +72,16 @@ The following commands are currently implemented. Grouping follows the [MPD prot
 * [ ] Checking string escaping edgecases
 * [x] Binary response handling
 * [x] Filter handling / construction
+* [ ] Config options (Timeout, Password etc)
 * [ ] Audio format/settings
 * [ ] Authentication
 * [ ] Nuget export
 * [ ] i18n?
 
 ### Unittests
-* [ ] Find best method to do this
-* [ ] Write some tests
+* [x] Find best method to do this
+* [x] Write some tests
+* [ ] Write some more tests
 
 ### Documentation
 * [ ] Code documentation
@@ -97,7 +90,7 @@ The following commands are currently implemented. Grouping follows the [MPD prot
 
 ### Cleanup
 * [ ] Connection errors handling
-* [ ] Response parsing
+* [x] Response parsing
 
 ## Roadmap
 Depending on the level of energy and the endurance of corona, the following things will be done

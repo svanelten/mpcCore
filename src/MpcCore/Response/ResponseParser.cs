@@ -1,7 +1,6 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Contracts.Mpd;
 using MpcCore.Mpd;
-using MpcCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,10 +58,80 @@ namespace MpcCore.Response
 		}
 
 		/// <summary>
-		/// Gets the output device information from the response;
+		/// Gets a list of mounts from a response
+		/// </summary>
+		/// <returns>IEnumerable<IMount> List of mount</returns>
+		public IEnumerable<IMount> GetListedMounts()
+		{
+			var result = new List<IMount>();
+			IMount mount = null;
+
+			foreach (var item in _valueList)
+			{
+				if (item.Key == ResponseParserKeys.MountName)
+				{
+					if (mount != null)
+					{
+						result.Add(mount);
+					}
+
+					mount = new Mount { Name = item.Value };
+				}
+
+				if (item.Key == ResponseParserKeys.MountStorage)
+				{
+					mount.Path = item.Value;
+				}
+			}
+
+			if (mount != null)
+			{
+				result.Add(mount);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets a list of neighbors from a response
+		/// </summary>
+		/// <returns>IEnumerable<INeighbor> List of neighbors</returns>
+		public IEnumerable<INeighbor> GetListedNeighbors()
+		{
+			var result = new List<INeighbor>();
+			INeighbor neighbor = null;
+
+			foreach (var item in _valueList)
+			{
+				if (item.Key == ResponseParserKeys.NeighborName)
+				{
+					if (neighbor != null)
+					{
+						result.Add(neighbor);
+					}
+
+					neighbor = new Neighbor { Name = item.Value };
+				}
+
+				if (item.Key == ResponseParserKeys.NeighborStorage)
+				{
+					neighbor.Path = item.Value;
+				}
+			}
+
+			if (neighbor != null)
+			{
+				result.Add(neighbor);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets a list of output devices from the response;
 		/// </summary>
 		/// <returns>IEnumerable<IOutputDevice></returns>
-		public IEnumerable<IOutputDevice> GetOutputDeviceList()
+		public IEnumerable<IOutputDevice> GetListedOutputDevices()
 		{
 			var result = new List<IOutputDevice>();
 			OutputDevice device = null;
@@ -87,7 +156,7 @@ namespace MpcCore.Response
 					case ResponseParserKeys.OutputDeviceName:
 						device.Name = item.Value;
 						break;
-					case ResponseParserKeys.OutputDevicePlugin:
+					case ResponseParserKeys.Plugin:
 						device.Plugin = item.Value;
 						break;
 					case ResponseParserKeys.OutputDeviceAttribute:
@@ -101,6 +170,48 @@ namespace MpcCore.Response
 			if (device != null)
 			{
 				result.Add(device);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets a list of DecoderPlugins from the response;
+		/// </summary>
+		/// <returns>IEnumerable<IDecoderPlugin></returns>
+		public IEnumerable<IDecoderPlugin> GetListedDecoderPlugins()
+		{
+			var result = new List<IDecoderPlugin>();
+			IDecoderPlugin plugin = null;
+
+			foreach (var item in _valueList)
+			{
+				if (item.Key == ResponseParserKeys.Plugin)
+				{
+					if (plugin != null)
+					{
+						result.Add(plugin);
+					}
+
+					plugin = new DecoderPlugin { Name = item.Value };
+				}
+
+				switch (item.Key)
+				{
+					case ResponseParserKeys.MimeType:
+						plugin.SupportedMimeTypes.ToList().Add(item.Value);
+						break;
+					case ResponseParserKeys.Suffix:
+						plugin.SupportedSuffixes.ToList().Add(item.Value);
+						break;
+					default:
+						break;
+				}
+			}
+
+			if (plugin != null)
+			{
+				result.Add(plugin);
 			}
 
 			return result;
@@ -157,13 +268,22 @@ namespace MpcCore.Response
 		}
 
 		/// <summary>
+		/// Returns the raw key:value pairs from the response, minus the status line.
+		/// </summary>
+		/// <returns>IEnumerable<KeyValuePair<string, string>></returns>
+		public IEnumerable<KeyValuePair<string, string>> GetKeyValueList()
+		{
+			return _valueList;
+		}
+
+		/// <summary>
 		/// Reads a list of sticker values from the MPD response
 		/// </summary>
 		/// <param name="path">The path to the MPD item this sticker belongs to or is situated under in case of dir searches. 
 		/// Each sticker item in the response will have this path by default, unless the response defines one.</param>
 		/// <param name="type">The sticker type from <see cref="StickerType"/></param>
 		/// <returns></returns>
-		public List<ISticker> GetStickerList(string path = "", string type = StickerType.Song)
+		public List<ISticker> GetListedSticker(string path = "", string type = StickerType.Song)
 		{
 			var result = new List<ISticker>();
 			var filePath = path;

@@ -50,7 +50,7 @@ namespace MpcCore.Commands.Sticker
 
 			var parser = new ResponseParser(response);
 
-			return parser.GetStickerList(Path, StickerType).FirstOrDefault();
+			return parser.GetListedSticker(Path, StickerType).FirstOrDefault();
 		}
 	}
 }

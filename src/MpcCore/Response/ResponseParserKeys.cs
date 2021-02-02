@@ -23,6 +23,8 @@
 		public const string Position = "pos";
 		public const string Range = "range";
 		public const string Format = "format";
+		public const string Plugin = "plugin";
+		public const string Suffix = "suffix";
 
 		// status keys
 		public const string Partition = "partition";
@@ -50,9 +52,16 @@
 		// output devices
 		public const string OutputDeviceId = "outputid";
 		public const string OutputDeviceName = "outputname";
-		public const string OutputDevicePlugin = "plugin";
 		public const string OutputDeviceEnabled = "outputenabled";
 		public const string OutputDeviceAttribute = "attribute";
+
+		// mounts
+		public const string MountName = "mount";
+		public const string MountStorage = "storage";
+
+		// neighbors
+		public const string NeighborName = "name";
+		public const string NeighborStorage = "neighbor";
 
 		// other
 		public const string Fingerprint = "chromaprint";
@@ -62,8 +71,12 @@
 		public const string MimeType = "type";
 		public const string TagType = "tagtype";
 		public const string Id = "id";
+		public const string Command = "command";
 
 		// sticker
 		public const string Sticker = "sticker";
+
+		// urlhandlers
+		public const string Handler = "handler";
 	}
 }

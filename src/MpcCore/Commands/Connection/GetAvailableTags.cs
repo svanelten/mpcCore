@@ -1,6 +1,5 @@
-﻿using MpcCore.Contracts;
+﻿using MpcCore.Commands.Base;
 using MpcCore.Response;
-using System.Collections.Generic;
 
 namespace MpcCore.Commands.Connection
 {
@@ -10,15 +9,15 @@ namespace MpcCore.Commands.Connection
 	/// That is a good idea, because it makes responses smaller. Other tagtypes sub commands configure this list.
 	/// <seealso cref="https://www.musicpd.org/doc/html/protocol.html#connection-settings"/>
 	/// </summary>
-	public class GetAvailableTags : IMpcCoreCommand<IEnumerable<string>>
+	public class GetAvailableTags : ValueListCommandBase
 	{
-		public string Command { get; internal set; } = "tagtypes";
-
-		public IEnumerable<string> HandleResponse(IMpdResponse response)
-		{ 
-			var parser = new ResponseParser(response);
-
-			return parser.GetValueList(ResponseParserKeys.TagType);
+		/// <summary>
+		/// <inheritdoc/>
+		/// </summary>
+		public GetAvailableTags()
+		{
+			Command = "tagtypes";
+			Key = ResponseParserKeys.TagType;
 		}
 	}
 }

@@ -34,7 +34,7 @@ namespace MpcCore.Commands.Base
 
 			var parser = new ResponseParser(response);
 
-			return parser.GetStickerList(Path, StickerType);
+			return parser.GetListedSticker(Path, StickerType);
 		}
 	}
 }
