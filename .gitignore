@@ -13,3 +13,4 @@ global.json
 **/bin/ 
 **/obj/
 **/.vs
+_backup/
