@@ -1,4 +1,4 @@
-name: .NET
+name: .NET Build
 
 on:
   push:
@@ -22,7 +22,4 @@ jobs:
       working-directory: ./src
     - name: Build
       run: dotnet build --no-restore
-      working-directory: ./src
-    - name: Test
-      run: dotnet test
       working-directory: ./src
