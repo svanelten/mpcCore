@@ -123,8 +123,8 @@ namespace MpcCore
 		/// There is no error handling on this, use carefully.
 		/// </summary>
 		/// <param name="command">mpd command</param>
-		/// <returns>Task<List<string>> response</returns>
-		public async Task<List<string>> SendCommandAsync(string command)
+		/// <returns>Task<IEnumerable<string>> response</returns>
+		public async Task<IEnumerable<string>> SendCommandAsync(string command)
 		{
 			var response = new List<string>();
 
@@ -150,49 +150,16 @@ namespace MpcCore
 		/// <typeparam name="T">result type T depending on the command</typeparam>
 		/// <param name="command">MpcCoreCommand</param>
 		/// <returns>Task with result<T></returns>
-		public async Task<IMpcCoreResponse<T>> SendAsync<T>(IMpcCoreCommand<T> command)
+		public async Task<IMpdResponse> SendAsync<T>(IMpcCoreCommand<T> command)
 		{
-			if (command == null)
-			{
-				return new MpcCoreResponse<T>(command, new MpcCoreResponseStatus
-				{
-					HasError = true,
-					ErrorMessage = "Command is null or empty"
-				});
-			}
-
 			var connected = await CheckConnectionAsync();
-			MpdResponse response;
 
-			try
-			{
 				_writer.WriteLine(command.Command);
 				_writer.Flush();
 
-				response = (command.Command.StartsWith("readpicture") || command.Command.StartsWith("albumart"))
+				return (command.Command.StartsWith("readpicture") || command.Command.StartsWith("albumart"))
 					? await ReadBinaryResponseAsync()
 					: await ReadResponseAsync();
-
-			}
-			catch (Exception exception)
-			{
-				try
-				{
-					await DisconnectAsync();
-				}
-				catch (Exception)
-				{
-					// TODO handle exception correctly	
-				}
-
-				return new MpcCoreResponse<T>(command, new MpcCoreResponseStatus
-				{
-					HasError = true,
-					ErrorMessage = $"An exception occured: {exception.Message} in {exception.Source}"
-				});
-			}
-
-			return await new MpcCoreResponse<T>(command, response).CreateResult();
 		}
 
 		/// <summary>
@@ -213,7 +180,7 @@ namespace MpcCore
 		/// Reads the response from the MPD server and creates a string list from it
 		/// </summary>
 		/// <returns>Task<List<string>></returns>
-		private async Task<MpdResponse> ReadResponseAsync()
+		private async Task<IMpdResponse> ReadResponseAsync()
 		{
 			var response = new MpdResponse();
 
@@ -228,7 +195,7 @@ namespace MpcCore
 			return response;
 		}
 
-		private async Task<MpdResponse> ReadBinaryResponseAsync()
+		private async Task<IMpdResponse> ReadBinaryResponseAsync()
 		{
 			var response = new MpdResponse() { BinaryChunk = new BinaryChunk() };
 

@@ -1,4 +1,5 @@
 ﻿using MpcCore.Contracts.Mpd;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,6 +26,11 @@ namespace MpcCore.Mpd
 		/// Name of this directory
 		/// </summary>
 		public string Name { get; internal set; }
+
+		/// <summary>
+		/// Last modified date for this directory
+		/// </summary>
+		public DateTime? LastModified { get; set; }
 
 		/// <summary>
 		/// List of MPD files in this directory

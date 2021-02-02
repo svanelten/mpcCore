@@ -10,7 +10,7 @@ namespace MpcCore
 		bool IsConnected { get; }
 		Task ConnectAsync();
 		Task DisconnectAsync();
-		Task<IMpcCoreResponse<T>> SendAsync<T>(IMpcCoreCommand<T> command);
-		Task<List<string>> SendCommandAsync(string command);
+		Task<IMpdResponse> SendAsync<T>(IMpcCoreCommand<T> command);
+		Task<IEnumerable<string>> SendCommandAsync(string command);
 	}
 }

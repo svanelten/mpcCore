@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MpcCore
+﻿namespace MpcCore
 {
-    public class Constants
+	public class Constants
     {
-        public static readonly string Ok = "OK";
-        public static readonly string Ack = "ACK";
+        public const string Ok = "OK";
+        public const string Ack = "ACK";
         public const string KeyValueMarker = ": ";
-        public static readonly string FirstLinePrefix = "OK MPD ";
+        public const string FirstLinePrefix = "OK MPD ";
     }
 }

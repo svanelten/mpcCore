@@ -2,6 +2,7 @@
 using MpcCore.Contracts.Mpd;
 using MpcCore.Extensions;
 using MpcCore.Mpd;
+using MpcCore.Response;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,14 +24,46 @@ namespace MpcCore
 			_connection = connection;
 		}
 
-		public async Task<List<string>> SendRawCommandAsync(string command)
+		public async Task<IEnumerable<string>> SendRawCommandAsync(string command)
 		{
 			return await _connection.SendCommandAsync(command);
 		}
 
 		public async Task<IMpcCoreResponse<T>> SendAsync<T>(IMpcCoreCommand<T> command)
 		{
-			return await _connection.SendAsync(command);
+			if (command == null)
+			{
+				return new MpcCoreResponse<T>(command, new MpcCoreResponseStatus
+				{
+					HasError = true,
+					ErrorMessage = "Command is null or empty"
+				});
+			}
+
+			IMpdResponse response = null;
+
+			try { 
+				response = await _connection.SendAsync(command);
+			}
+			catch(Exception exception)
+			{
+				try
+				{
+					await _connection.DisconnectAsync();
+				}
+				catch (Exception)
+				{
+					// TODO handle exception correctly	
+				}
+
+				return new MpcCoreResponse<T>(command, new MpcCoreResponseStatus
+				{
+					HasError = true,
+					ErrorMessage = $"An exception occured: {exception.Message} in {exception.Source}"
+				});
+			}
+
+			return await new MpcCoreResponse<T>(command, response).CreateResult();
 		}
 
 		public async Task<bool> ConnectAsync()

@@ -20,6 +20,9 @@
 		public const string Playlist = "playlist";
 		public const string File = "file";
 		public const string Directory = "directory";
+		public const string Position = "pos";
+		public const string Range = "range";
+		public const string Format = "format";
 
 		// status keys
 		public const string Partition = "partition";

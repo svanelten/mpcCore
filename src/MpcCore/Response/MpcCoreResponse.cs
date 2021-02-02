@@ -1,6 +1,4 @@
 ﻿using MpcCore.Contracts;
-using MpcCore.Extensions;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,7 +6,7 @@ namespace MpcCore.Response
 {
 	public class MpcCoreResponse<T> : IMpcCoreResponse<T>
 	{
-		private MpdResponse _response;
+		private IMpdResponse _response;
 
 		public IMpcCoreCommand<T> Command { get; internal set; }
 
@@ -16,7 +14,7 @@ namespace MpcCore.Response
 
 		public T Result { get; internal set; }
 
-		public MpcCoreResponse(IMpcCoreCommand<T> command, MpdResponse response)
+		public MpcCoreResponse(IMpcCoreCommand<T> command, IMpdResponse response)
 		{
 			_response = response;
 			Command = command;

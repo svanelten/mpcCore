@@ -1,6 +1,7 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Contracts.Mpd;
 using MpcCore.Mpd;
+using MpcCore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace MpcCore.Response
 	/// <summary>
 	/// The Responseparser does all the heavy lifting parsing the MPD response
 	/// into DTOs for the different result types.
-	/// TODO: fix the method TODOs.
-	/// TODO: clean up, maybe split into some logical subcomponents?
 	/// </summary>
+	// TODO: fix the method TODOs.
+	// TODO: clean up, maybe split into some logical subcomponents?
 	internal class ResponseParser
 	{
 		/// <summary>
@@ -152,14 +153,15 @@ namespace MpcCore.Response
 		/// <returns>String list</returns>
 		public IEnumerable<string> GetValueList(string key)
 		{
-			return _valueList.Where(e => e.Key == key).Select(e => e.Value).ToList();
+			return _valueList.Where(e => e.Key.ToLower() == key.ToLower()).Select(e => e.Value).ToList();
 		}
 
 		/// <summary>
-		/// Reads a sticker value from the MPD response
+		/// Reads a list of sticker values from the MPD response
 		/// </summary>
-		/// <param name="path">The path to the MPD item this sticker belongs to</param>
-		/// <param name="type">The sticker type</param>
+		/// <param name="path">The path to the MPD item this sticker belongs to or is situated under in case of dir searches. 
+		/// Each sticker item in the response will have this path by default, unless the response defines one.</param>
+		/// <param name="type">The sticker type from <see cref="StickerType"/></param>
 		/// <returns></returns>
 		public List<ISticker> GetStickerList(string path = "", string type = StickerType.Song)
 		{
@@ -194,26 +196,45 @@ namespace MpcCore.Response
 
 		/// <summary>
 		/// Parses a directory list MPD response into directory and item DTOs
-		/// TODO: make more efficient/cleaner
-		/// TODO: merge with TrackBuilder functionality to read file metadata
 		/// TODO: add playlist recognition
+		/// TODO: recreate dir structure
 		/// </summary>
 		/// <param name="path">The requested path from the command</param>
 		/// <returns>IDirectory instance</returns>
 		public IDirectory GetDirectoryListing(string path = "")
 		{
 			var split = splitPath(path);
-
 			var result = new Directory { Name = split.Last(), Path = path };
+			var builder = new TrackBuilder();
 
-			Directory currentDirectory = null;
-			Item currentFile = null;
+			// the current dir
+			Directory currentDirectory = result;
+
+			// keeps track if the current section is a directory or not
+			bool currentSectionIsDirectory = true;
 
 			foreach (var kv in _valueList)
 			{
-				if (kv.Key == ResponseParserKeys.Directory)
+				var key = kv.Key.ToLower();
+
+				// if we have been collecting metadata for a file and now there is a new file/directory section,
+				// add the current file to the currently parsed direcory
+				if (key == ResponseParserKeys.Directory || key == ResponseParserKeys.File)
 				{
-					if (currentDirectory != null)
+					if (!builder.IsEmpty())
+					{
+						currentDirectory.Files.Add(builder.Get());
+					}
+				}
+
+				// a new directory section begins
+				// start a new directory dto, add the last one to the main directory
+				if (key == ResponseParserKeys.Directory)
+				{
+					currentSectionIsDirectory = true;
+
+					// only do it if the current dir is _not_ the main entry dir
+					if (currentDirectory != null && currentDirectory != result)
 					{
 						result.Directories.Add(currentDirectory);
 					}
@@ -221,19 +242,39 @@ namespace MpcCore.Response
 					var newDirValues = splitPath(kv.Value);
 					currentDirectory = new Directory { Name = newDirValues.Last(), Path = kv.Value };
 				}
-				else if (kv.Key == ResponseParserKeys.File)
+				// a new file section begins
+				// start a new file dto
+				else if (key == ResponseParserKeys.File)
 				{
-					var newFileValues = splitPath(kv.Value);
-					currentFile = new Item { Name = newFileValues.Last(), Path = kv.Value };
-					if (currentDirectory != null)
+					currentSectionIsDirectory = false;
+
+					// having added the last file to the current dir at the top,
+					// we start reading a new one here
+					builder.New(kv.Value);
+				}
+				// neither file nor dir, this is a metadata value for something.
+				// add data to the current file, unless we are in a directory section
+				else
+				{
+					if (currentSectionIsDirectory)
 					{
-						currentDirectory.Files.Add(currentFile);
+						// in directory sections, this can only be a last-modified
+						if (key == ResponseParserKeys.LastModified)
+						{
+							currentDirectory.LastModified = GetLastModified(kv.Value);
+						}
 					}
 					else
 					{
-						result.Files.Add(currentFile);
+						builder.Add(kv);
 					}
 				}
+			}
+
+			// add the last file in the pipeline to the current dir
+			if (!builder.IsEmpty())
+			{
+				currentDirectory.Files.Add(builder.Get());
 			}
 
 			return result;
@@ -330,7 +371,7 @@ namespace MpcCore.Response
 		/// Reads the volume info from the mpd response.
 		/// Will return if there is no value
 		/// </summary>
-		/// <returns>int volume or null</returns>
+		/// <returns>Nullable int volume</returns>
 		public int? GetVolume()
 		{
 			var volume = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.Volume);
@@ -346,9 +387,9 @@ namespace MpcCore.Response
 
 		/// <summary>
 		/// Reads the replaygainvalue from the MPD response
-		/// TODO: should probably refactored with a null response for uniform result pattern
 		/// </summary>
 		/// <returns>replaygain string value or n/a</returns>
+		// TODO: should probably refactored with a null response for uniform result pattern
 		public string GetReplayGainStatus()
 		{
 			var mode = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.ReplayGainMode);
@@ -393,10 +434,10 @@ namespace MpcCore.Response
 
 		/// <summary>
 		/// Reads the current audio setting value from the MPD response
-		/// TODO: add regex and type conversion
 		/// </summary>
-		/// <param name="str"></param>
-		/// <returns></returns>
+		/// <param name="str">audio value string</param>
+		/// <returns>Audio object</returns>
+		// TODO: add regex and type conversion
 		public IAudio GetAudio(string str)
 		{
 			return new Audio
@@ -409,12 +450,10 @@ namespace MpcCore.Response
 		/// Reads the chroma fingerprint from an MPD response. 
 		/// Empty if mpd does not provide the functionality
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>string fingerprint</returns>
 		public string GetFingerprint()
 		{
-			var print = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.Fingerprint);
-
-			return print?.Value ?? string.Empty;
+			return GetValueList(ResponseParserKeys.Fingerprint).FirstOrDefault() ?? string.Empty;
 		}
 
 		/// <summary>
@@ -424,16 +463,14 @@ namespace MpcCore.Response
 		/// <returns>DateTime or null</returns>
 		public DateTime? GetLastModified()
 		{
-			var kv = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.LastModified);
-
-			return GetLastModified(kv?.Value);
+			return GetLastModified(GetValueList(ResponseParserKeys.LastModified).FirstOrDefault());
 		}
 
 		/// <summary>
 		/// Tries to parse a last-modified date from a string.
 		/// Returns null if not possible
 		/// </summary>
-		/// <returns>DateTime or null</returns>
+		/// <returns>Nullable DateTime</returns>
 		public DateTime? GetLastModified(string str = "")
 		{
 			if (!string.IsNullOrEmpty(str))
@@ -452,12 +489,12 @@ namespace MpcCore.Response
 		/// <summary>
 		/// Reads the information on a MPD jon from a MPD response
 		/// </summary>
-		/// <returns></returns>
+		/// <returns>IJob object</returns>
 		public IJob GetJobInformation()
 		{
-			var jobInfo = _valueList?.FirstOrDefault(e => e.Key == ResponseParserKeys.UpdatingDb);
+			var jobInfo = GetValueList(ResponseParserKeys.UpdatingDb).FirstOrDefault();
 
-			if (string.IsNullOrEmpty(jobInfo?.Value))
+			if (string.IsNullOrEmpty(jobInfo))
 			{
 				return null;
 			}
@@ -465,7 +502,7 @@ namespace MpcCore.Response
 			return new Job
 			{
 				JobName = ResponseParserKeys.UpdatingDb,
-				JobId = Convert.ToInt32(jobInfo?.Value ?? "0")
+				JobId = Convert.ToInt32(jobInfo ?? "0")
 			};
 		}
 
@@ -516,38 +553,32 @@ namespace MpcCore.Response
 		/// <returns>List of MPD items with metadata</returns>
 		public IEnumerable<IItem> GetListedTracks()
 		{
-			var list = new List<IItem>();
-
-			if (!_valueList.Any())
-			{
-				return list;
-			}
-
+			var result = new List<IItem>();
 			var builder = new TrackBuilder();
 
-			foreach (var item in _valueList)
+			foreach (var kv in _valueList)
 			{
-				if (item.Key.Equals(ResponseParserKeys.File))
+				if (kv.Key.Equals(ResponseParserKeys.File))
 				{
 					if (!builder.IsEmpty())
 					{
-						list.Add(builder.Create());
+						result.Add(builder.Get());
 					}
 
-					builder.New(item.Value);
+					builder.New(kv.Value);
 				}
 				else
 				{
-					builder.Add(item);
+					builder.Add(kv);
 				}
 			}
 
 			if (!builder.IsEmpty())
 			{
-				list.Add(builder.Create());
+				result.Add(builder.Get());
 			}
 
-			return list;
+			return result;
 		}
 
 		/// <summary>
@@ -572,7 +603,7 @@ namespace MpcCore.Response
 		}
 
 		/// <summary>
-		/// Splits a path string into its parts and does sets some minimum values if neccessary
+		/// Splits a path string into its parts and sets some minimum values if neccessary
 		/// </summary>
 		/// <param name="path">file/directory path</param>
 		/// <returns>List of path levels</returns>
@@ -603,7 +634,8 @@ namespace MpcCore.Response
 		/// Returns null if string is empty.
 		/// </summary>
 		/// <param name="str">unix timestamp string</param>
-		/// <returns>DateTime or null</returns>
+		/// <returns>Nullable DateTime</returns>
+		// TODO: does this really need to live here?
 		private DateTime? _getDateTimeFromTimestamp(string str)
 		{
 			if (string.IsNullOrEmpty(str))

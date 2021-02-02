@@ -40,7 +40,6 @@ namespace MpcCore.Commands.Database
 
 			var parser = new ResponseParser(response);
 
-			// TODO: better handling for single item result?
 			return parser.GetListedTracks().ToList().FirstOrDefault();
 		}
 	}

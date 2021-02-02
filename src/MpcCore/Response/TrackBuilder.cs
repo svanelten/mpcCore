@@ -17,102 +17,33 @@ namespace MpcCore.Response
 
 		public TrackBuilder Add(KeyValuePair<string, string> item)
 		{
-			_parse(item);
-			return this;
-		}
-
-		public IItem Create()
-		{
-			return _track;
-		}
-
-		public bool IsEmpty()
-		{
-			return _track == null || string.IsNullOrEmpty(_track.Path);
-		}
-
-		private void _parse(KeyValuePair<string, string> item)
-		{
-			// TODO: add append/update functionality for multiple values in one tag
-			// TODO: maybe move non-tagdata to a common parser functionality
 			switch (item.Key.ToLower())
 			{
 				// file path / stream url
-				case "file":
+				case ResponseParserKeys.File:
 					_track.Path = item.Value;
 					break;
 
 				// playlist / queue data
-				case "duration":
+				case ResponseParserKeys.Duration:
 					_track.Duration = Convert.ToDouble(item.Value);
 					break;
-				case "pos":
+				case ResponseParserKeys.Position:
 					_track.Position = Convert.ToInt32(item.Value);
 					break;
-				case "id":
+				case ResponseParserKeys.Id:
 					_track.Id = Convert.ToInt32(item.Value);
 					break;
-				case "range":
+				case ResponseParserKeys.Range:
 					_track.Range = item.Value;
 					break;
-				case "format":
+				case ResponseParserKeys.Format:
 					_track.Format = item.Value;
 					break;
-
-				// common tag metadata
-				case Tag.Album:
-					_track.Album = item.Value;
-					break;
-				case Tag.AlbumSort:
-					_track.AlbumSortable = item.Value;
-					break;
-				case Tag.AlbumArtist:
-					_track.AlbumArtist = item.Value;
-					break;
-				case Tag.AlbumArtistSort:
-					_track.AlbumArtistSortable = item.Value;
-					break;
-				case Tag.Artist:
-					_track.Artist = item.Value;
-					break;
-				case Tag.ArtistSort:
-					_track.ArtistSortable = item.Value;
-					break;
-				case Tag.Title:
-					_track.Title = item.Value;
-					break;
-				case Tag.Name:
-					_track.Name = item.Value;
-					break;
-				case Tag.Genre:
-					_track.Genre = item.Value;
-					break;
-				case Tag.Date:
-					_track.Date = item.Value;
-					break;
-				case Tag.OriginalDate:
-					_track.OriginalDate = item.Value;
-					break;
-				case Tag.Composer:
-					_track.Composer = item.Value;
-					break;
-				case Tag.Performer:
-					_track.Performer = item.Value;
-					break;
-				case Tag.Conductor:
-					_track.Conductor = item.Value;
-					break;
-				case Tag.Work:
-					_track.Work = item.Value;
-					break;
-				case Tag.Comment:
-					_track.Comment = item.Value;
-					break;
+				
+				// unique data
 				case Tag.Disc:
 					_track.Disc = Convert.ToInt32(item.Value);
-					break;
-				case Tag.Label:
-					_track.Label = item.Value;
 					break;
 				case Tag.Track:
 					_track.Track = Convert.ToInt32(item.Value);
@@ -138,12 +69,20 @@ namespace MpcCore.Response
 					_track.MusicBrainz.WorkId = item.Value;
 					break;
 
-				// default value: unknown tags
+				// add tag value to list
 				default:
-					_track.UnknownMetadata.Add(item);
+					_track.AddMetaData(item.Key, item.Value);
 					break;
 			}
+
+			return this;
+		}
+
+		public bool IsEmpty() => _track == null || string.IsNullOrEmpty(_track.Path);
+
+		public IItem Get()
+		{
+			return _track;
 		}
 	}
-
 }

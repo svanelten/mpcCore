@@ -5,6 +5,7 @@ namespace MpcCore.Contracts.Mpd
 {
 	public interface IItem
 	{
+		Dictionary<string, List<string>> MetaData { get; }
 		string Album { get; }
 		string AlbumArtist { get; }
 		string AlbumArtistSortable { get; }
@@ -30,7 +31,7 @@ namespace MpcCore.Contracts.Mpd
 		string Range { get; }
 		string Title { get; }
 		int Track { get; }
-		IDictionary<string, string> UnknownMetadata { get; }
 		string Work { get; }
+		IEnumerable<string> GetTagValues(string tagName);
 	}
 }
