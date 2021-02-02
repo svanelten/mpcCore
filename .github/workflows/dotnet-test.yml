@@ -1,4 +1,4 @@
-name: .NET Build
+name: .NET Test
 
 on:
   push:
@@ -20,6 +20,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./src
-    - name: Build
-      run: dotnet build --no-restore
+    - name: Test
+      run: dotnet test --verbosity normal
       working-directory: ./src
