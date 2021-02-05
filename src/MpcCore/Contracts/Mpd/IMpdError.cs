@@ -6,5 +6,6 @@
 		string Command { get; set; }
 		string Line { get; set; }
 		string Message { get; set; }
+		public string RawError { get; set; }
 	}
 }

@@ -327,13 +327,24 @@ namespace MpcCore.Response
 			var result = new Directory { Name = split.Last(), Path = path };
 			var builder = new TrackBuilder();
 
-			// the current dir
-			Directory currentDirectory = result;
+			// we will skip the first line of the response containing the entry for the requested dir
+			var skip = 1;
+
+			// check if there is a second line wit a datetime for the requested dir
+			if (_valueList.Count >= 2 && _valueList.ElementAt(1).Key.ToLower().StartsWith(ResponseParserKeys.LastModified))
+			{
+				result.LastModified = GetLastModified(_valueList.ElementAt(1).Value);
+				// if yes, skip this line as well
+				skip = 2;
+			}
+
+			// the current dir being looked at
+			IDirectory currentDirectory = null;
 
 			// keeps track if the current section is a directory or not
 			bool currentSectionIsDirectory = true;
 
-			foreach (var kv in _valueList)
+			foreach (var kv in _valueList.Skip(skip))
 			{
 				var key = kv.Key.ToLower();
 
@@ -343,7 +354,22 @@ namespace MpcCore.Response
 				{
 					if (!builder.IsEmpty())
 					{
-						currentDirectory.Files.Add(builder.Get());
+						if (currentDirectory == null)
+						{
+							result.Files.Add(builder.Get());
+						}
+						else
+						{
+							currentDirectory.Files.Add(builder.Get());
+						}
+
+						builder.Clear();
+					}
+
+					// only do it if the current dir is _not_ the main entry dir
+					if (currentDirectory != null)
+					{
+						result.Directories.Add(currentDirectory);
 					}
 				}
 
@@ -352,12 +378,6 @@ namespace MpcCore.Response
 				if (key == ResponseParserKeys.Directory)
 				{
 					currentSectionIsDirectory = true;
-
-					// only do it if the current dir is _not_ the main entry dir
-					if (currentDirectory != null && currentDirectory != result)
-					{
-						result.Directories.Add(currentDirectory);
-					}
 
 					var newDirValues = splitPath(kv.Value);
 					currentDirectory = new Directory { Name = newDirValues.Last(), Path = kv.Value };
@@ -391,10 +411,15 @@ namespace MpcCore.Response
 				}
 			}
 
-			// add the last file in the pipeline to the current dir
-			if (!builder.IsEmpty())
+			// add the last element in the pipeline
+			if (!currentSectionIsDirectory && !builder.IsEmpty())
 			{
 				currentDirectory.Files.Add(builder.Get());
+			}
+
+			if (currentSectionIsDirectory && currentDirectory != null)
+			{
+				result.Directories.Add(currentDirectory);
 			}
 
 			return result;
@@ -452,10 +477,10 @@ namespace MpcCore.Response
 						status.NextSongId = Convert.ToInt32(kv.Value);
 						break;
 					case ResponseParserKeys.Elapsed:
-						status.Elapsed = Double.Parse(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
+						status.Elapsed = double.Parse(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
 						break;
 					case ResponseParserKeys.Duration:
-						status.Duration = Double.Parse(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
+						status.Duration = double.Parse(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
 						break;
 					case ResponseParserKeys.Bitrate:
 						status.Bitrate = Convert.ToInt32(kv.Value);
@@ -464,7 +489,7 @@ namespace MpcCore.Response
 						status.Crossfade = Convert.ToInt32(kv.Value);
 						break;
 					case ResponseParserKeys.MixRampDb:
-						status.MixRampDb = Convert.ToDouble(kv.Value);
+						status.MixRampDb = double.Parse(kv.Value, System.Globalization.CultureInfo.InvariantCulture);
 						break;
 					case ResponseParserKeys.MixRampDelay:
 						status.MixRampDelay = Convert.ToInt32(kv.Value);
@@ -689,7 +714,10 @@ namespace MpcCore.Response
 				}
 				else
 				{
-					builder.Add(kv);
+					if (!builder.IsEmpty())
+					{
+						builder.Add(kv);
+					}
 				}
 			}
 

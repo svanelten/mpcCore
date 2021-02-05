@@ -26,9 +26,10 @@ namespace MpcCore.Response
 			Status = status;
 		}
 
+		#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
 		public async Task<IMpcCoreResponse<T>> CreateResult()
 		{
-			if (_response.IsNullOrEmpty)
+			if (_response == null || _response.IsNullOrEmpty)
 			{
 				Status.ErrorMessage = "response is empty";
 				Status.HasError = true;
@@ -50,5 +51,6 @@ namespace MpcCore.Response
 
 			return this;
 		}
+		#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
 	}
 }

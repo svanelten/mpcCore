@@ -135,7 +135,7 @@ namespace MpcCore.Mpd
 		/// A work is a distinct intellectual or artistic creation, which can be expressed in the form of one or more audio recordings.
 		/// Could be anything.
 		/// </summary>
-		public string Work => _getFirstValue(Tag.Album);
+		public string Work => _getFirstValue(Tag.Work);
 
 		/// <summary>
 		/// The artist who performed the song.

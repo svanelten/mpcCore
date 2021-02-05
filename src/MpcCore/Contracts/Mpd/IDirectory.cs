@@ -1,4 +1,5 @@
 ﻿using MpcCore.Contracts.Mpd;
+using System;
 using System.Collections.Generic;
 
 namespace MpcCore.Mpd
@@ -11,5 +12,6 @@ namespace MpcCore.Mpd
 		bool HasDirectories { get; }
 		string Name { get; }
 		string Path { get; }
+		DateTime? LastModified { get; set; }
 	}
 }
