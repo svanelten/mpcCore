@@ -6,7 +6,7 @@ namespace MpcCore.Commands.Player
 	{
 		public SeekInSongOnPosition(int position, double seconds)
 		{
-			Command = $"seek {position} {seconds:#.##}";
+			Command = $"seek {position} {seconds.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}";
 		}
 	}
 }

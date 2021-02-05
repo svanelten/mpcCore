@@ -6,7 +6,7 @@ namespace MpcCore.Commands.Player
 	{
 		public SeekInSongId(string itemId, double seconds)
 		{
-			Command = $"seekid {itemId} {seconds:#.##}";
+			Command = $"seekid {itemId} {seconds.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}";
 		}
 	}
 }

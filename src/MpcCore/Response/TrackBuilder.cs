@@ -26,7 +26,7 @@ namespace MpcCore.Response
 
 				// playlist / queue data
 				case ResponseParserKeys.Duration:
-					_track.Duration = Convert.ToDouble(item.Value);
+					_track.Duration = Convert.ToDouble(item.Value, System.Globalization.CultureInfo.InvariantCulture);
 					break;
 				case ResponseParserKeys.Position:
 					_track.Position = Convert.ToInt32(item.Value);
@@ -79,6 +79,8 @@ namespace MpcCore.Response
 		}
 
 		public bool IsEmpty() => _track == null || string.IsNullOrEmpty(_track.Path);
+
+		public void Clear() => _track = null;
 
 		public IItem Get()
 		{

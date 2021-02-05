@@ -6,7 +6,7 @@ namespace MpcCore.Commands.Player
 	{
 		public Seek(double seconds)
 		{
-			Command = $"seekcur {seconds:#.##}";
+			Command = $"seekcur {seconds.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}";
 		}
 	}
 }
