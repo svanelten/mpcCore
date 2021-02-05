@@ -154,12 +154,12 @@ namespace MpcCore
 		{
 			var connected = await CheckConnectionAsync();
 
-				_writer.WriteLine(command.Command);
-				_writer.Flush();
+			_writer.WriteLine(command.Command);
+			_writer.Flush();
 
-				return (command.Command.StartsWith("readpicture") || command.Command.StartsWith("albumart"))
-					? await ReadBinaryResponseAsync()
-					: await ReadResponseAsync();
+			return (command.Command.StartsWith("readpicture") || command.Command.StartsWith("albumart"))
+				? await ReadBinaryResponseAsync()
+				: await ReadResponseAsync();
 		}
 
 		/// <summary>

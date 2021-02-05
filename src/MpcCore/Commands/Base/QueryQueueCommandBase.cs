@@ -1,7 +1,6 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Contracts.Mpd;
 using MpcCore.Response;
-using System.Collections.Generic;
 
 namespace MpcCore.Commands.Base
 {

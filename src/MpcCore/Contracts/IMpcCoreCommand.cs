@@ -1,7 +1,4 @@
-﻿using MpcCore.Response;
-using System.Collections.Generic;
-
-namespace MpcCore.Contracts
+﻿namespace MpcCore.Contracts
 {
 	public interface IMpcCoreCommand<out T>
 	{
