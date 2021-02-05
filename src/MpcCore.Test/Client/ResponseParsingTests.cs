@@ -3,6 +3,7 @@ using MpcCore.Commands.Base;
 using MpcCore.Contracts.Mpd;
 using MpcCore.Mpd;
 using MpcCore.Test.Mock;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -146,16 +147,19 @@ namespace MpcCore.Test.Client
 		[Fact]
 		public async Task HandleDirectoryResult()
 		{
+			var date1 = DateTime.Now;
+			var date2 = DateTime.Now.AddYears(-10).AddDays(-2);
+
 			var connection = GetConnectionMock();
 			connection.Setup(m => m.SendAsync<IDirectory>(It.IsAny<DirectoryCommandBase>()))
 				.ReturnsAsync(MockResponse.Builder.New().Add(new List<string> { 
 					"directory: /foo",
-					"last-modified: 2019-08-07T16:50:00.0000000+02:00",
+					$"last-modified: {date1.ToString("o", System.Globalization.CultureInfo.InvariantCulture)}",
 					"file: /foo/bar1.mp3",
 					"file: /foo/bar2.mp3",
 					"directory: /foo/sub1",
 					"directory: /foo/sub2",
-					"last-modified: 2018-07-06T15:40:30.0000000+02:00",
+					$"last-modified: {date2.ToString("o", System.Globalization.CultureInfo.InvariantCulture)}",
 					"file: /foo/sub2/file1.mp3",
 					}).Create());
 
@@ -169,7 +173,7 @@ namespace MpcCore.Test.Client
 			// main dir
 			Assert.Equal("/foo", result.Result.Path);
 			Assert.Equal("foo", result.Result.Name);
-			Assert.Equal("2019-08-07T16:50:00.0000000+02:00", result.Result.LastModified.Value.ToString("o", System.Globalization.CultureInfo.InvariantCulture));
+			Assert.Equal(date1, result.Result.LastModified.Value);
 
 			// sub dir without date and without files
 			Assert.Equal("sub1", result.Result.Directories.First().Name);
@@ -182,7 +186,7 @@ namespace MpcCore.Test.Client
 			Assert.True(result.Result.Directories.Last().HasFiles);
 			Assert.Single(result.Result.Directories.Last().Files);
 			Assert.False(result.Result.Directories.Last().HasDirectories);
-			Assert.Equal("2018-07-06T15:40:30.0000000+02:00", result.Result.Directories.Last().LastModified.Value.ToString("o", System.Globalization.CultureInfo.InvariantCulture));
+			Assert.Equal(date2, result.Result.Directories.Last().LastModified.Value);
 
 			// file in sub2 dir
 			Assert.Equal("/foo/sub2/file1.mp3", result.Result.Directories.Last().Files.First().Path);
@@ -194,10 +198,11 @@ namespace MpcCore.Test.Client
 		[Fact]
 		public async Task HandlePlaylistResult()
 		{
+			var date1 = DateTime.Now;
 			var connection = GetConnectionMock();
 			connection.Setup(m => m.SendAsync<IPlaylist>(It.IsAny<QueryPlaylistCommandBase>()))
 				.ReturnsAsync(MockResponse.Builder.New().Add(new List<string> {
-					"last-modified: 2019-08-07T16:50:00.0000000+02:00",
+					$"last-modified: {date1.ToString("o", System.Globalization.CultureInfo.InvariantCulture)}",
 					"file: /foo/bar1.mp3",
 					"file: /foo/bar2.mp3"
 					}).Create());
@@ -209,7 +214,7 @@ namespace MpcCore.Test.Client
 			Assert.Equal("playlistname1", result.Result.Name);
 			Assert.Equal(2, result.Result.Count);
 			Assert.Equal(2, result.Result.Items.Count());
-			Assert.Equal("2019-08-07T16:50:00.0000000+02:00", result.Result.LastModified.Value.ToString("o", System.Globalization.CultureInfo.InvariantCulture));
+			Assert.Equal(date1, result.Result.LastModified.Value);
 
 			Assert.Equal("/foo/bar1.mp3", result.Result.Items.First().Path);
 			Assert.Equal("/foo/bar2.mp3", result.Result.Items.Last().Path);
@@ -221,11 +226,12 @@ namespace MpcCore.Test.Client
 		[Fact]
 		public async Task HandleItemResult()
 		{
+			var date1 = DateTime.Now;
 			var connection = GetConnectionMock();
 			connection.Setup(m => m.SendAsync<IItem>(It.IsAny<Commands.Status.GetCurrentSong>()))
 				.ReturnsAsync(MockResponse.Builder.New().Add(new List<string> {
 					"file: foo/songname.mp3",
-					"Last-Modified: 2021-01-12T15:36:47Z",
+					$"last-modified: {date1.ToString("o", System.Globalization.CultureInfo.InvariantCulture)}",
 					"Artist: the artist",
 					"ArtistSort: artist, the",
 					"AlbumArtist: the artist",
