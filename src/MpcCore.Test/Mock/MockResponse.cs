@@ -1,9 +1,11 @@
 ﻿using MpcCore.Contracts;
 using MpcCore.Response;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace MpcCore.Test.Mock
 {
+	[ExcludeFromCodeCoverage]
 	internal class MockResponse
 	{
 		public static IMpdResponse BasicOkResponse => Builder.New().AddBasicOkResponse().Create();
@@ -13,6 +15,7 @@ namespace MpcCore.Test.Mock
 		public static ResponseBuilder Builder = new ResponseBuilder();
 	}
 
+	[ExcludeFromCodeCoverage]
 	internal class ResponseBuilder
 	{
 		private MpdResponse _response = new MpdResponse();
@@ -45,13 +48,19 @@ namespace MpcCore.Test.Mock
 
 		public ResponseBuilder AddErrorResponse(string code, string line, string command, string message = "errormessage")
 		{
-			_result = $"ACK[{code}@{line}] {{{command}}} {message}";
+			_result = $"ACK [{code}@{line}] {{{command}}} {message}";
 			return this;
 		}
 
 		public ResponseBuilder Add(List<string> data)
 		{
 			_response.RawResponse.AddRange(data);
+			return this;
+		}
+
+		public ResponseBuilder Add(string data)
+		{
+			_response.RawResponse.Add(data);
 			return this;
 		}
 

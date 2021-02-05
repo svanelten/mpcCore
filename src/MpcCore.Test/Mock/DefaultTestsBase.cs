@@ -7,23 +7,20 @@ namespace MpcCore.Test.Mock
 	[ExcludeFromCodeCoverage]
 	public class DefaultTestsBase
 	{
-		protected MpcCoreClient Client;
-		protected Mock<IMpcCoreConnection> Connection;
-
-		public DefaultTestsBase()
+		public Mock<IMpcCoreConnection> GetConnectionMock()
 		{
-			Connection = new Mock<IMpcCoreConnection>();
-			Connection
+			var connection = new Mock<IMpcCoreConnection>(MockBehavior.Strict);
+			connection
 				.Setup(p => p.ConnectAsync())
 				.Returns(Task.CompletedTask);
-			Connection
+			connection
 				.Setup(p => p.DisconnectAsync())
 				.Returns(Task.CompletedTask);
-			Connection
+			connection
 				.Setup(p => p.IsConnected)
 				.Returns(true);
 
-			Client = new MpcCoreClient(Connection.Object);
+			return connection;
 		}
 	}
 }
