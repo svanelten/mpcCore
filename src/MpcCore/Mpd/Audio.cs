@@ -6,6 +6,6 @@ namespace MpcCore.Mpd
 	{
 		public int SampleRate { get; set; }
 		public int Bits { get; set; }
-		public int Channel { get; set; }
+		public int Channels { get; set; }
 	}
 }

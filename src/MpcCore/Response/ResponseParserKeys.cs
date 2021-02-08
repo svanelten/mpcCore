@@ -1,4 +1,5 @@
-﻿namespace MpcCore.Response
+﻿
+namespace MpcCore.Response
 {
 	/// <summary>
 	/// Magic values = bad

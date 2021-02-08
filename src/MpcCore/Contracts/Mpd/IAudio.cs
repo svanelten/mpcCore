@@ -4,6 +4,6 @@
 	{
 		int SampleRate { get; set; }
 		int Bits { get; set; }
-		int Channel { get; set; }
+		int Channels { get; set; }
 	}
 }

@@ -500,6 +500,9 @@ namespace MpcCore.Response
 					case ResponseParserKeys.Error:
 						status.Error = ResponseParser.ParseMpdError("error in status", kv.Value);
 						break;
+					case ResponseParserKeys.UpdatingDb:
+						status.UpdateJobId = Convert.ToInt32(kv.Value);
+						break;
 					// deprecated values to ignore
 					case ResponseParserKeys.Time:
 						break;
@@ -582,13 +585,22 @@ namespace MpcCore.Response
 		/// </summary>
 		/// <param name="str">audio value string</param>
 		/// <returns>Audio object</returns>
-		// TODO: add regex and type conversion
 		public IAudio GetAudio(string str)
 		{
-			return new Audio
-			{
+			var regex = new Regex(@"^([0-9]*):([0-9]*):([0-9]*)$");
+			var match = regex.Match(str);
 
-			};
+			if (match.Groups.Count == 4)
+			{
+				return new Audio
+				{
+					SampleRate = int.Parse(match.Groups[1].Value),
+					Bits = int.Parse(match.Groups[2].Value),
+					Channels = int.Parse(match.Groups[3].Value),
+				};
+			}
+
+			return null;
 		}
 
 		/// <summary>

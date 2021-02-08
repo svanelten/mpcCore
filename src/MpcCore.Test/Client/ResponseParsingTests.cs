@@ -329,6 +329,71 @@ namespace MpcCore.Test.Client
 			Assert.False(result.Status.HasMpdError);
 			Assert.False(result.Status.HasError);
 		}
+
+		[Fact]
+		public async Task HandleStatusResult()
+		{
+			var date1 = DateTime.Now;
+			var connection = GetConnectionMock();
+			connection.Setup(m => m.SendAsync<IStatus>(It.IsAny<Commands.Status.GetStatus>()))
+				.ReturnsAsync(MockResponse.Builder.New().Add(new List<string> {
+					"audio: 44800:16:4",
+					"bitrate: 44800",
+					"consume: 1",
+					"crossfade: 3",
+					"duration: 120.34",
+					"elapsed: 45.65",
+					"mixrampdb: 2.5",
+					"mixrampdelay: 2",
+					"nextsong: 12",
+					"nextsongid: 345",
+					"playlist: 456",
+					"playlistlength: 9001",
+					"random: 0",
+					"repeat: 0",
+					"single: 0",
+					"song: 8345",
+					"songid: 935",
+					"volume: 98",
+					"state: play",
+					"partition: default",
+					"updating_db: 14"
+					}).Create());
+
+			var client = new MpcCoreClient(connection.Object);
+			var result = await client.SendAsync(new Commands.Status.GetStatus());
+
+			Assert.True(result.Result is IStatus);
+			Assert.Equal(44800, result.Result.AudioSetting.SampleRate);
+			Assert.Equal(16, result.Result.AudioSetting.Bits);
+			Assert.Equal(4, result.Result.AudioSetting.Channels);
+			Assert.Equal(44800, result.Result.Bitrate);
+			Assert.True(result.Result.Consume);
+			Assert.Equal(3, result.Result.Crossfade);
+			Assert.Equal(120.34d, result.Result.Duration);
+			Assert.Equal(45.65d, result.Result.Elapsed);
+			Assert.False(result.Result.IsPaused);
+			Assert.True(result.Result.IsPlaying);
+			Assert.False(result.Result.IsStopped);
+			Assert.Equal(2.5d, result.Result.MixRampDb);
+			Assert.Equal(2, result.Result.MixRampDelay);
+			Assert.Equal(12, result.Result.NextSong);
+			Assert.Equal(345, result.Result.NextSongId);
+			Assert.Equal("default", result.Result.Partition);
+			Assert.Equal(456, result.Result.Playlist);
+			Assert.Equal(9001, result.Result.PlaylistLength);
+			Assert.False(result.Result.Random);
+			Assert.False(result.Result.Repeat);
+			Assert.False(result.Result.Single);
+			Assert.Equal(8345, result.Result.Song);
+			Assert.Equal(935, result.Result.SongId);
+			Assert.Equal("play", result.Result.State);
+			Assert.Equal(14, result.Result.UpdateJobId);
+			Assert.Equal(98, result.Result.Volume);
+
+			Assert.False(result.Status.HasMpdError);
+			Assert.False(result.Status.HasError);
+		}
 	}
 }
  

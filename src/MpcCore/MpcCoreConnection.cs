@@ -256,7 +256,7 @@ namespace MpcCore
 								var bytesToRead = length; // this is how many bytes we need to read
 								while (bytesToRead > 0)
 								{
-									// .Read will not necessary read as many bytes as we requested. This is why we're doing it in the loop.
+									// Read will not necessarily read as many bytes as we requested. This is why we're doing it in the loop.
 									var bytesRead = await _reader.BaseStream.ReadAsync(response.BinaryChunk.Binary, chunkOffset, bytesToRead);
 									bytesToRead -= bytesRead;
 									chunkOffset += bytesRead;
@@ -280,6 +280,7 @@ namespace MpcCore
 			}
 			catch (Exception e)
 			{
+				// TODO: communicate the error clearly
 				Console.WriteLine(e.Message);
 			}
 
