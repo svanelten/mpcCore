@@ -90,8 +90,9 @@ namespace MpcCore
 			await _tcpClient.ConnectAsync(_endPoint.Address, _endPoint.Port);
 
 			_networkStream = _tcpClient.GetStream();
-			_reader = new StreamReader(_networkStream, Encoding.ASCII);
-			_writer = new StreamWriter(_networkStream, Encoding.ASCII) { NewLine = "\n" };
+			var encoding = new UTF8Encoding(false, true);
+			_reader = new StreamReader(_networkStream, encoding);
+			_writer = new StreamWriter(_networkStream, encoding) { NewLine = "\n" };
 
 			var firstLine = _reader.ReadLine();
 
